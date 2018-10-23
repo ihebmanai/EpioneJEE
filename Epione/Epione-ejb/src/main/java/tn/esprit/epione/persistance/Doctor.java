@@ -19,14 +19,24 @@ public class Doctor extends User implements Serializable {
 	@Column(name="codeDoctor_d")
 	private String codeDoctor ;
 	
+	@Column(name="activation_account")
+	private int flag=0;
+	
 	@OneToMany(mappedBy="doctor")
 	private List<Appointment> appointments ;
+	
+	
 	@OneToMany(mappedBy="doctor")
 	private List<Notification> notifications;
+	
+	
 	@OneToMany(mappedBy="doctor")
 	private List<Discussion> discussions;
+	
+	
 	@OneToMany(mappedBy="doctor")
 	private List<Report> reports;
+	
 	
 	
 	
@@ -38,10 +48,10 @@ public class Doctor extends User implements Serializable {
 		super();
 	}
 	
-	public Doctor(String codeDoctor, List<Appointment> appointments, List<Notification> notifications) {
+	public Doctor(String codeDoctor,int flag, List<Appointment> appointments, List<Notification> notifications) {
 		super();
 		this.codeDoctor = codeDoctor;
-		
+		this.flag=flag;
 		this.appointments = appointments;
 		this.notifications = notifications;
 	}
@@ -74,7 +84,15 @@ public class Doctor extends User implements Serializable {
 		this.discussions = discussions;
 	}
 
+	public int getFlag() {
+		return flag;
+	}
 
+	public void setFlag(int flag) {
+		this.flag = flag;
+	}
+
+	
 	
 	
 	

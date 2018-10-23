@@ -12,8 +12,11 @@ public class Specialist extends Doctor implements Serializable{
 	
 	@Column(name="speciality_s")
 	private String speciality;
+	
 	@Column(name="motif_s")
 	private String motif ;
+	
+	
 	public String getSpeciality() {
 		return speciality;
 	}

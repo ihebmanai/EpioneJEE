@@ -3,7 +3,9 @@ package tn.esprit.epione.persistance;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -19,7 +21,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="user_type")
+@DiscriminatorColumn(name="user_type",discriminatorType=DiscriminatorType.STRING)
 public class User implements Serializable {
 		
 	@Id
@@ -27,6 +29,8 @@ public class User implements Serializable {
 	private int id ; 
 	private String firstName ; 
 	private String lastName ;
+	@Column(name="user_type" , insertable = false, updatable = false)
+	private String userType;
 	@Temporal(TemporalType.DATE)
 	private Date birthDate ; 
 	@Embedded
@@ -49,6 +53,14 @@ public class User implements Serializable {
 	
 	
 	
+
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
 
 
 	public User(String firstName, String lastName, Date birthDate, Adresse adresse, String phone, String email,
@@ -73,9 +85,6 @@ public class User implements Serializable {
 
 	public int getId() {
 		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public String getFirstName() {
 		return firstName;
@@ -157,6 +166,22 @@ public class User implements Serializable {
 	}
 	public void setRole(Role role) {
 		this.role = role;
+	}
+
+
+
+
+
+	public String getUserType() {
+		return userType;
+	}
+
+
+
+
+
+	public void setUserType(String userType) {
+		this.userType = userType;
 	} 
 	
 	
