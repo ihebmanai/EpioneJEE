@@ -78,7 +78,7 @@ ArrayList<Extract> test= extract.SearchBySpecialityandPlace(specialite, place, p
 		Doctor u=extract.AddDoctor(nom, prenom, specialite);
 		if(u==null)
 		{
-			return Response.status(Status.OK).entity("not found").build();
+			return Response.status(Status.OK).entity("doctor not found in doctlib, please make sure of your name and city").build();
 		}
 		return Response.status(Status.ACCEPTED).entity(u).build();
 		
