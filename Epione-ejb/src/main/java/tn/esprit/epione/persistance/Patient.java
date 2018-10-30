@@ -29,7 +29,7 @@ public class Patient extends User implements Serializable{
 	@JsonIgnore
 	@OneToMany(mappedBy="patient")
 	private List<Discussion> discussions;
-	
+	@JsonIgnore
 	@OneToOne
 	private Course course;
 	
