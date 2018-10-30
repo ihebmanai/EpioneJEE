@@ -32,11 +32,19 @@ public class EvaluationServicesImpl implements EvaluationServiceLocal {
 			return evaluation.getId();
 		}catch(Exception e)
 		{
+			System.out.println(e.getMessage());
 			return -1;
 		}
 		
 	}
 
+
+	@Override
+	public Evaluation getEvalutation(int id) {
+		return em.find(Evaluation.class, id);
+		
+	}
+	
 	@Override
 	public int editEvalutation(Evaluation evaluation) {
 		try {

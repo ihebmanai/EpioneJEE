@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,9 +26,12 @@ public class Notification implements Serializable {
 	private Date date;
 	private String checkAppointmentType;
 	private int seen;
-	@OneToOne
-	
+	@OneToOne(cascade=CascadeType.REMOVE)
 	private Appointment appointment;
+	@ManyToOne
+	private Patient patient ;  
+	@ManyToOne
+	private Doctor doctor ; 
 	
 	public int getId() {
 		return id;
@@ -72,6 +76,19 @@ public class Notification implements Serializable {
 	}
 	public void setCheckAppointmentType(String checkAppointmentType) {
 		this.checkAppointmentType = checkAppointmentType;
+	}
+	
+	public Patient getPatient() {
+		return patient;
+	}
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
+	public Doctor getDoctor() {
+		return doctor;
+	}
+	public void setDoctor(Doctor doctor) {
+		this.doctor = doctor;
 	}
 	public Notification() {
 	}

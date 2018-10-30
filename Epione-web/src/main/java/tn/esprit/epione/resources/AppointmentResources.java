@@ -87,6 +87,7 @@ public class AppointmentResources  {
 	}
 	
 	@DELETE
+	//@Secured
 	@Path("{appointments}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -100,12 +101,26 @@ public class AppointmentResources  {
 
 	}
 	
+	
+	@DELETE
+	@Path("deleteAuto")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteAuto() throws ParseException 
+	{
+		appointmentIServices.DeleteAutomatique();
+		return Response.status(Status.GONE).entity("Automatic delete executed").build();
+
+
+	}
+	
 	@GET
 	@Path("{app}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getApp(@PathParam(value="app") int id) {
-		Appointment ap = appointmentIServices.consulterApp(id);
-		return Response.status(Status.OK).entity(ap).build();
+		
+		return Response.ok(appointmentIServices.consulterApp(id)).build();
+
 	}
 	
 
@@ -142,7 +157,7 @@ public class AppointmentResources  {
 	@Path("/app")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response getUsers(
+	public Response getByDateHour(
 		@QueryParam("date") String date,
 		@QueryParam("hour") String hour) throws ParseException {
 		List<Appointment> ap = appointmentIServices.SelectAppByDateAndByHour(date, hour);
@@ -155,23 +170,59 @@ public class AppointmentResources  {
 	}
 	
 	@GET
-	@Path("req/{app}")
+	@Path("cancel/{app}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response myRequests(@PathParam(value="app") int id) {
-		 appointmentIServices.MyRequests(id);
+	public Response cancelReq(@PathParam(value="app") int id) {
+		 if(appointmentIServices.cancelRequest(id)) {
+		
 		return Response.status(Status.OK).entity("request canceled").build();
+		 }
+		 else
+			 return Response.status(Status.NOT_MODIFIED).entity("no Request to cancel").build();
 	}
 	
 	@GET
 	@Path("mail/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response mailPatient(@PathParam(value="id") int id) throws AddressException, MessagingException {
 		 appointmentIServices.mailingId(id);
 		return Response.status(Status.GONE).entity("mail Sent").build();
 	}
 	
-
 	
+	
+	@GET
+	@Path("req/{app}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response myRequests(@PathParam(value="app") int id) {
+		 if(appointmentIServices.MyRequests(id).size()!=0) {
+		
+		return Response.status(Status.FOUND).entity(appointmentIServices.MyRequests(id)).build();
+		 }
+		 else return Response.status(Status.NOT_FOUND).entity(appointmentIServices.MyRequests(id)).build();
+	}
+	
+	@GET
+	@Path("/mailsent")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response mail(
+		@QueryParam("dest") String dest,
+		@QueryParam("title") String title,
+		@QueryParam("message") String message) throws ParseException, AddressException, MessagingException {
+		appointmentIServices.mailing(dest, title, message);
+		
+			return Response.status(Status.OK).entity("Mail Sent").build();
+		
+	}
+	
+	@GET
+	@Path("searsh")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response searsh(@QueryParam(value="title")String title) {
+		
+		return Response.status(Status.OK).entity(appointmentIServices.findAppByTitle(title)).build();
+		
+	}
 }
 	
 	

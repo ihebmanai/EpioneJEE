@@ -8,34 +8,34 @@
         <dependent-module archiveName="Epione-ejb.jar" deploy-path="/" handle="module:/resource/Epione-ejb/Epione-ejb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jsoup.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/org/jsoup/jsoup/1.8.3/jsoup-1.8.3.jar">
+        <dependent-module archiveName="jsoup.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/org/jsoup/jsoup/1.8.3/jsoup-1.8.3.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="gson.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar">
+        <dependent-module archiveName="gson.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-core.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/core/jackson-core/2.9.5/jackson-core-2.9.5.jar">
+        <dependent-module archiveName="jackson-core.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/core/jackson-core/2.9.5/jackson-core-2.9.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-databind.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar">
+        <dependent-module archiveName="jackson-databind.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-annotations.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.9.5/jackson-annotations-2.9.5.jar">
+        <dependent-module archiveName="jackson-annotations.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.9.5/jackson-annotations-2.9.5.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-jaxrs-json-provider.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.9.1/jackson-jaxrs-json-provider-2.9.1.jar">
+        <dependent-module archiveName="jackson-jaxrs-json-provider.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.9.1/jackson-jaxrs-json-provider-2.9.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-jaxrs-base.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.9.1/jackson-jaxrs-base-2.9.1.jar">
+        <dependent-module archiveName="jackson-jaxrs-base.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.9.1/jackson-jaxrs-base-2.9.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-module-jaxb-annotations.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.9.1/jackson-module-jaxb-annotations-2.9.1.jar">
+        <dependent-module archiveName="jackson-module-jaxb-annotations.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.9.1/jackson-module-jaxb-annotations-2.9.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="mail.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/javax/mail/mail/1.4.7/mail-1.4.7.jar">
+        <dependent-module archiveName="mail.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/javax/mail/mail/1.4.7/mail-1.4.7.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="activation.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/javax/activation/activation/1.1/activation-1.1.jar">
+        <dependent-module archiveName="activation.jar" deploy-path="/lib/" handle="module:/classpath/var/M2_REPO/javax/activation/activation/1.1/activation-1.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

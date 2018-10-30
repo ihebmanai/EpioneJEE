@@ -59,4 +59,11 @@ public class EvaluationResource {
 		
 		return Response.status(Response.Status.FOUND).entity(es.AverageRating(idUser)).build();
 	}
+	@GET
+	@Path("get/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getEvaluation(@PathParam("id") int idEvaluation) {
+		
+		return Response.status(Response.Status.FOUND).entity(es.getEvalutation(idEvaluation)).build();
+	}
 }

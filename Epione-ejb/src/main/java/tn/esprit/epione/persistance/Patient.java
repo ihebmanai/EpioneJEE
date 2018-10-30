@@ -32,20 +32,13 @@ public class Patient extends User implements Serializable{
 	
 	private Course course ;
 	
-	//Nouvelle case Treated
 	private int treated=0;
 	
 	
 	
 	
-	public int getTreated() {
-		return treated;
-	}
-
-	public void setTreated(int treated) {
-		this.treated = treated;
-	}
-
+	
+	
 	public Patient() {
 		super();
 	}
@@ -107,6 +100,14 @@ public class Patient extends User implements Serializable{
 	public void setDiscussions(List<Discussion> discussions) {
 		this.discussions = discussions;
 	} 
+	public int getTreated() {
+		return treated;
+	}
+
+	public void setTreated(int treated) {
+		this.treated = treated;
+	}
+
 	
 	
 }

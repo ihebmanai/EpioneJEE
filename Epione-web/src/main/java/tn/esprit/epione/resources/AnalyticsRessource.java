@@ -5,11 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.ejb.EJB;
-import javax.websocket.server.PathParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-
 
 import tn.esprit.epione.interfaces.AnalyticsInterface;
 
@@ -25,6 +23,8 @@ public class AnalyticsRessource {
 		long nbr=analytics.getAllPatientsTreated();
 		return Response.status(Response.Status.OK).entity(nbr).build();
 	}
+	
+	
 	@GET
 	@Path("/date/{dateone}/{datetwo}")
 	public Response getNumberOfPatientsTreatedByDate(@javax.ws.rs.PathParam("dateone")String dateOne,@javax.ws.rs.PathParam("datetwo")String dateTwo)
@@ -55,6 +55,23 @@ public class AnalyticsRessource {
 
 	}
 	
+
+	
+	@GET
+	@Path("/canceled")
+	public Response getNumberOfCanceledAppointements()
+	{
+		long nbr=analytics.getCanceledRequest();
+		return Response.status(Response.Status.OK).entity(nbr).build();
+	}
+	
+	@GET
+	@Path("/accepted")
+	public Response getNumberOfAcceptedAppointements()
+	{
+		long nbr=analytics.getAcceptedRequest();
+		return Response.status(Response.Status.OK).entity(nbr).build();
+	}
 
 
 }

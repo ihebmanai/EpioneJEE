@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -46,6 +47,8 @@ public class Appointment implements Serializable {
 	@OneToOne(mappedBy="appointment", cascade = CascadeType.REMOVE)
 	@JoinColumn(name="id_evaluation",referencedColumnName="id",insertable=true,updatable=true)
 	private Evaluation evaluation;
+	
+	
 	
 	
 	public Appointment() {

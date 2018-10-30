@@ -146,13 +146,21 @@ public class CourseRessources {
 	
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response validateTreatment(Treatments t,@QueryParam("id")int id){
-		if(id!=0 && t==null){
-			courseService.validateTreatement(id);
-			return Response.status(Response.Status.OK).entity("treatment is valide now").build();
-		}else if(id==0 && t!=null){
+	public Response updateTreatments(Treatments t){
+		if(t!=null){
 			courseService.updateTreatment(t);
 			return Response.status(Response.Status.OK).entity("treatment updating").build();
+		}else
+			return Response.status(Response.Status.NOT_FOUND).entity("no id").build();
+	}
+	
+	@PUT
+	@Path("vadidateTreatment")
+	public Response validateTreatment(@QueryParam("id")int id){
+		if(id!=0){
+			courseService.validateTreatement(id);
+			return Response.status(Response.Status.OK).entity("treatment is valide now").build();
+		
 		}else
 			return Response.status(Response.Status.NOT_FOUND).entity("no id").build();
 	}

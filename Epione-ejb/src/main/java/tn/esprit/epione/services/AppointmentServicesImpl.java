@@ -64,13 +64,19 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	}
 	
 	@PostConstruct
-	@Schedule(hour = "*", minute = "*", second = "*/30", persistent = false)
+	@Schedule(hour = "*", minute = "*", second = "*/10", persistent = false)
 	public void doPeriodicCleanup() throws ParseException { 
-	/*	
-		List<Appointment> list_app = new ArrayList<Appointment>();
-		System.out.println("thread 2 s'execute"+list_app);
+	
+	/*	List<Appointment> list_app = new ArrayList<Appointment>();
 		rememberPatient();
+		System.out.println("cron 1 s'execute"+list_app);
+//		
+		System.out.println("**************************************");
+//		DeleteAutomatique();
+////		System.out.println("cron 2 s'execute"+list_app);
+//		System.out.println("**************************************");
 	*/
+	
 		
 	}
 
@@ -91,7 +97,9 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	{
 		if(a!=null) {
 		Appointment ap = em.find(Appointment.class,a.getId());
+		
 		ap = a ; 
+		ap.setState(State.running);
 		em.merge(ap);
 		System.out.println("Appointment Updated");
 		return true;
@@ -133,10 +141,14 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	}
 
 	@Override
-	public void cancelRequest(int idAppointment) {
+	public boolean cancelRequest(int idAppointment) {
 		
 		Appointment ap = em.find(Appointment.class, idAppointment);
+		 if(ap!=null){
 		em.remove(ap);
+		return true;
+		}
+		 return false;
 		
 	}
 
@@ -146,7 +158,7 @@ public class AppointmentServicesImpl implements AppointmentIServices {
     	TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
     			" where m.patient=:sender "+" and m.state = 1 ",Appointment.class);	
 		 List<Appointment> appointments = query.setParameter("sender", pat).getResultList();
-		 System.out.println("size of list my appointmtnets"+appointments.size());
+		 System.out.println("size of list my appointmtnetssssss"+appointments.size());
 		 return appointments;
 		
 	}
@@ -180,10 +192,13 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 
 	@Override
 	public Appointment consulterApp(int id) {
-		TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
-    			" where m.id=:id " ,Appointment.class);
-		query.setParameter("id", id);
-		Appointment a = query.getSingleResult();
+//		TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
+//    			" where m.id=:id " ,Appointment.class);
+//		query.setParameter("id", id);
+//		Appointment a = query.getSingleResult();
+//		
+		Appointment a = em.find(Appointment.class, id);
+		System.out.println(a.getMessage());
 		
 		return a;
 	}
@@ -270,7 +285,7 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	@Override
 	public void rememberPatient() throws ParseException {
 		// date d'ajourdh'hui - 3  java 8 library
-		LocalDate today = LocalDate.now().minusDays(3);
+		LocalDate today = LocalDate.now();
 		DateFormat formatter1;
 		formatter1 = new SimpleDateFormat("dd-MMM-yy");
 		java.util.Date d = new SimpleDateFormat("yyyy-MM-dd").parse(today.toString());
@@ -281,14 +296,15 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 		
 
 		Query q = em.createQuery("select o from Appointment o"
-				+ " where o.date_appointment  >= :today ");
+				+ " where datediff(o.date_appointment , :today) <= 3 "+
+				" and datediff(o.date_appointment , :today) >= 0  ");
 		q.setParameter("today",d);
 		List<Appointment> apps =q.getResultList();
 		for (Appointment appointment : apps) {
 			Patient patient = em.find(Patient.class, appointment.getPatient().getId());
-			System.out.println("le patient:=======>"+appointment.getPatient().getId());
+			System.out.println("le patient conecerné ayant un id::===>"+appointment.getPatient().getId());
 			try {
-				mailing(patient.getEmail(), "baba Ali", "Thread executing");
+				mailing(patient.getEmail(), "Vous avez un rdv dans 3 jours", appointment.getMessage());
 			} catch (AddressException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -299,10 +315,11 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 		}
 		System.out.println("Remember=====>"+q.getResultList().size()+"patient Ayant un rendez vous dans 3 jours");
 		}
-
+	
 	@Override
 	public void mailingId(int idRdv) throws AddressException, MessagingException {
-		Appointment ap = em.find(Appointment.class, idRdv); 
+		Appointment ap = em.find(Appointment.class, idRdv);
+		System.out.println("ap");
 		Patient patient = em.find(Patient.class, ap.getPatient().getId()); 
 		System.out.println("patient"+patient);
 		
@@ -349,9 +366,29 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	        t.close();
 		
 	}
-	
-	
+
 
 	
+	@Override
+	public List<Appointment> findAppByTitle(String title) {
+		return em.createQuery("SELECT e from Appointment e WHERE e.title like :param", Appointment.class)
+				.setParameter("param","%"+title+"%").getResultList();
+	}
 
+	@Override
+	public void DeleteAutomatique() throws ParseException {
+		LocalDate today = LocalDate.now();
+		DateFormat formatter1;
+		formatter1 = new SimpleDateFormat("dd-MMM-yy");
+		java.util.Date d = new SimpleDateFormat("yyyy-MM-dd").parse(today.toString());
+		
+		System.out.println("date=====>"+today);
+		List<Appointment> apps = getAll();
+		for (Appointment appointment : apps) {
+			if((appointment.getDate_appointment()).compareTo(d)<0) {
+				em.remove(appointment);
+			}
+		}
+
+}
 }

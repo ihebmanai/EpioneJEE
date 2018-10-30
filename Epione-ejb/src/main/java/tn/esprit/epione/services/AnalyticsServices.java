@@ -1,11 +1,7 @@
 package tn.esprit.epione.services;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -15,10 +11,8 @@ import javax.persistence.TypedQuery;
 
 import tn.esprit.epione.interfaces.AnalyticsInterface;
 import tn.esprit.epione.persistance.Appointment;
-import tn.esprit.epione.persistance.Course;
 import tn.esprit.epione.persistance.Doctor;
-import tn.esprit.epione.persistance.Patient;
-import tn.esprit.epione.persistance.Report;
+import tn.esprit.epione.persistance.State;
 
 @LocalBean
 @Stateless
@@ -62,9 +56,7 @@ public class AnalyticsServices implements AnalyticsInterface{
 		if( dateOne==null || dateTwo==null)
 			return nbr;
 		TypedQuery<Appointment> query=em.createQuery("select a from Appointment as a where a.date_appointment BETWEEN :dOne and :dTwo ",Appointment.class);
-		ArrayList<Appointment> appointementsList= (ArrayList<Appointment>) query.setParameter("dOne", dateOne).setParameter("dTwo", dateTwo).getResultList();
-
-		
+		ArrayList<Appointment> appointementsList= (ArrayList<Appointment>) query.setParameter("dOne", dateOne).setParameter("dTwo", dateTwo).getResultList();		
 		for (Appointment a:appointementsList)
 		{
 			if(a.getPatient().getTreated()==1)
@@ -72,6 +64,42 @@ public class AnalyticsServices implements AnalyticsInterface{
 				nbr++;
 			}
 		}
+		return nbr;
+	}
+	
+
+	
+	@Override
+	public long getCanceledRequest() {
+		long nbr = 0;
+		long nbrAll = 0;
+		long nbrCanceled = 0;
+
+		Query query=em.createQuery("select count(a.id) from Appointment as a");
+		nbrAll=(long) query.getSingleResult();
+		
+		Query query2=em.createQuery("select count(a.id) from Appointment as a where a.state = 0");
+		nbrCanceled=(long) query2.getSingleResult();
+		
+		nbr=(nbrCanceled *100) / nbrAll;
+		
+		return nbr;
+	}
+	
+	@Override
+	public long getAcceptedRequest() {
+		long nbr = 0;
+		long nbrAll = 0;
+		long nbrCanceled = 0;
+
+		Query query=em.createQuery("select count(a.id) from Appointment as a");
+		nbrAll=(long) query.getSingleResult();
+		
+		Query query2=em.createQuery("select count(a.id) from Appointment as a where a.state = 1");
+		nbrCanceled=(long) query2.getSingleResult();
+		
+		nbr=(nbrCanceled *100) / nbrAll;
+		
 		return nbr;
 	}
 	

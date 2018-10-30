@@ -13,6 +13,8 @@ public interface AnalyticsInterface {
 	public long getAllPatientsTreated();
 	public long getAllPatientsTreatedByDoctor(int doctorId);
 	public long getAllPatientsTreatedByDate(Date dateOne,Date dateTwo);
+	long getCanceledRequest();
+	long getAcceptedRequest();
 
 
 }

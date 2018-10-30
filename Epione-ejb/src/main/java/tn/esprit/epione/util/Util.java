@@ -25,4 +25,9 @@ public class Util {
 			return null;
 		return new Date(d.getTime() + nbrHours * (3600*1000)); //+ nbrHours 
 	}
+	public static Date NbrMinutes(Date d,int nbrMinutes) {
+		if(d == null)
+			return null;
+		return new Date(d.getTime() + nbrMinutes * (60000)); //+ nbrHours 
+	}
 }
