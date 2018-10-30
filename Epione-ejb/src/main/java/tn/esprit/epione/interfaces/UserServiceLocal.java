@@ -13,9 +13,11 @@ import tn.esprit.epione.persistance.User;
 public interface UserServiceLocal {
 
 	
+public User getUserById(int idUser);
+	
 	public int addDoctor(Doctor user);
 	public int addPatient(Patient user);
-	
+	public int addAdministrator(Administrator user);
 	
 	public boolean signInWithUsername(String username, String pwd);
 	public boolean signInWithEmail(String email, String pwd);
@@ -24,9 +26,9 @@ public interface UserServiceLocal {
 	
 	public boolean changePassword(String oldPassword, String newPassword, User u);
 
-	public void forgotPasswordByMail(User user);
+	public boolean forgotPasswordByMail(int idUser);
 
-	public boolean changeForgotPassword(String token, String newPwd, User user);
+	public boolean changeForgotPassword(int idUser, String token, String newPwd);
 
 	public User findUserById(int id);
 
@@ -35,14 +37,16 @@ public interface UserServiceLocal {
 
 	public void addUserPhoto(int user_id, String photo);
 
-//	public boolean banAccount(User u);
+	public boolean banAccount(User u);
 
 
 	public boolean confirmAccount(String token, User u);
 
 	public int isLoggedIn24H();
-	User getUserById(int idUser);
-	int addAdministrator(Administrator user);
+
+	public List<Doctor> ListDoctor();
+
+	public List<Patient> ListPatient();
 
 
 }
