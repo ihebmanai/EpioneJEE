@@ -44,3 +44,6 @@ buildNumber.properties
 
 
 # End of https://www.gitignore.io/api/java,maven,java-web
+Epione-ejb/.classpath
+Epione-web/.classpath
+.classpath
