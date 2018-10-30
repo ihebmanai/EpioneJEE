@@ -30,7 +30,8 @@ public class Patient extends User implements Serializable{
 	@OneToMany(mappedBy="patient")
 	private List<Discussion> discussions;
 	
-	private Course course ;
+	@OneToOne
+	private Course course;
 	
 	private int treated=0;
 	

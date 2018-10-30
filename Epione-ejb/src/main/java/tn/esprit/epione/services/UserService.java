@@ -13,8 +13,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import tn.esprit.epione.interfaces.UserServiceLocal;
-import tn.esprit.epione.interfaces.UserServiceRemote;
 import tn.esprit.epione.persistance.Administrator;
+import tn.esprit.epione.persistance.Course;
 import tn.esprit.epione.persistance.Doctor;
 import tn.esprit.epione.persistance.Patient;
 import tn.esprit.epione.persistance.User;
@@ -41,8 +41,15 @@ public class UserService implements UserServiceLocal {
 	public int addPatient(Patient user) {// SignUP
 		String crypted_pwd = encrypt(user.getPassword());
 		user.setPassword(crypted_pwd);
+		Course c = new Course();
+		
 		em.persist(user);
 		em.flush();
+		c.setPatient(user);
+		em.persist(c);
+		em.flush();
+		user.setCourse(c);
+		em.merge(user);
 		return user.getId();
 	}
 
