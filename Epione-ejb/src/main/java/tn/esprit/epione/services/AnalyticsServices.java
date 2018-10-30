@@ -2,6 +2,9 @@ package tn.esprit.epione.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -12,6 +15,7 @@ import javax.persistence.TypedQuery;
 import tn.esprit.epione.interfaces.AnalyticsInterface;
 import tn.esprit.epione.persistance.Appointment;
 import tn.esprit.epione.persistance.Doctor;
+import tn.esprit.epione.persistance.Patient;
 import tn.esprit.epione.persistance.State;
 
 @LocalBean
@@ -38,11 +42,15 @@ public class AnalyticsServices implements AnalyticsInterface{
 			return nbr;
 		TypedQuery<Appointment> query=em.createQuery("select a from Appointment as a where a.doctor=:d ",Appointment.class);
 		ArrayList<Appointment> appointementsList= (ArrayList<Appointment>) query.setParameter("d", d).getResultList();
-
-		
+		Set<Patient> hs = new HashSet<>();
 		for (Appointment a:appointementsList)
 		{
-			if(a.getPatient().getTreated()==1)
+			hs.add(a.getPatient());
+
+		}
+		for (Patient p:hs)
+		{
+			if(p.getTreated()==1)
 			{
 				nbr++;
 			}
@@ -57,9 +65,16 @@ public class AnalyticsServices implements AnalyticsInterface{
 			return nbr;
 		TypedQuery<Appointment> query=em.createQuery("select a from Appointment as a where a.date_appointment BETWEEN :dOne and :dTwo ",Appointment.class);
 		ArrayList<Appointment> appointementsList= (ArrayList<Appointment>) query.setParameter("dOne", dateOne).setParameter("dTwo", dateTwo).getResultList();		
+		Set<Patient> hs = new HashSet<>();
 		for (Appointment a:appointementsList)
 		{
-			if(a.getPatient().getTreated()==1)
+			hs.add(a.getPatient());
+
+		}
+
+		for (Patient p:hs)
+		{
+			if(p.getTreated()==1)
 			{
 				nbr++;
 			}
@@ -75,10 +90,10 @@ public class AnalyticsServices implements AnalyticsInterface{
 		long nbrAll = 0;
 		long nbrCanceled = 0;
 
-		Query query=em.createQuery("select count(a.id) from Appointment as a");
+		Query query=em.createQuery("select count(a.endHour) from Appointment as a");
 		nbrAll=(long) query.getSingleResult();
 		
-		Query query2=em.createQuery("select count(a.id) from Appointment as a where a.state = 0");
+		Query query2=em.createQuery("select count(a.endHour) from Appointment as a where a.state = 0");
 		nbrCanceled=(long) query2.getSingleResult();
 		
 		nbr=(nbrCanceled *100) / nbrAll;
@@ -92,10 +107,10 @@ public class AnalyticsServices implements AnalyticsInterface{
 		long nbrAll = 0;
 		long nbrCanceled = 0;
 
-		Query query=em.createQuery("select count(a.id) from Appointment as a");
+		Query query=em.createQuery("select count(a.endHour) from Appointment as a");
 		nbrAll=(long) query.getSingleResult();
 		
-		Query query2=em.createQuery("select count(a.id) from Appointment as a where a.state = 1");
+		Query query2=em.createQuery("select count(a.endHour) from Appointment as a where a.state = 1");
 		nbrCanceled=(long) query2.getSingleResult();
 		
 		nbr=(nbrCanceled *100) / nbrAll;

@@ -36,7 +36,7 @@ public class ExtractionReso implements ExtractionInt {
 		String profil;
 		int nb = 0;
 		ArrayList<Extract> list = new ArrayList<>();
-String url="https://www.doctolib.fr/" + spec + "?page=" + pagenumber;
+		String url = "https://www.doctolib.fr/" + spec + "?page=" + pagenumber;
 		doc = Jsoup.connect(url).userAgent("Mozilla").timeout(25000).get();
 		Elements tableRows = doc.getElementsByClass("dl-search-result-presentation");
 
@@ -53,11 +53,11 @@ String url="https://www.doctolib.fr/" + spec + "?page=" + pagenumber;
 //				System.out.println("profil "+profil);
 			if (!nom.isEmpty() && !specialite.isEmpty()) {
 				// System.out.println("nom: " + nom.get(0).text());
-				//String[] output = nom.get(0).text().split(" ", 2);
-				//String p = output[1];
+				// String[] output = nom.get(0).text().split(" ", 2);
+				// String p = output[1];
 
 				// System.out.println("nom: " + p);
-				ex.setNom( nom.get(0).text());
+				ex.setNom(nom.get(0).text());
 
 				// System.out.println("specialité: " + specialite.get(0).text());
 				ex.setSpecialite(specialite.get(0).text());
@@ -68,7 +68,7 @@ String url="https://www.doctolib.fr/" + spec + "?page=" + pagenumber;
 				ex.setPhoto(photo);
 				ex.setProfile(profil);
 
-				System.out.println("-------------");
+				// System.out.println("-------------");
 			}
 			list.add(ex);
 
@@ -89,8 +89,8 @@ String url="https://www.doctolib.fr/" + spec + "?page=" + pagenumber;
 		String profil;
 		int nb = 0;
 		ArrayList<Extract> list = new ArrayList<>();
-String url="https://www.doctolib.fr/medecin-generaliste/" + place + "?page=" + pagenumber;
-System.out.println(url);
+		String url = "https://www.doctolib.fr/medecin-generaliste/" + place + "?page=" + pagenumber;
+		System.out.println(url);
 		doc = Jsoup.connect(url).userAgent("Mozilla").timeout(25000).get();
 		Elements tableRows = doc.getElementsByClass("dl-search-result-presentation");
 
@@ -104,15 +104,15 @@ System.out.println(url);
 			photo = row.getElementsByTag("img").attr("src");
 			photo.substring(0);
 			profil = row.getElementsByTag("a").attr("href");
-			String p="";
+			String p = "";
 //				System.out.println("photo "+photo);
 //				System.out.println("profil "+profil);
 			if (!nom.isEmpty() && !specialite.isEmpty()) {
 				// System.out.println("nom: " + nom.get(0).text());
-				//String[] output = nom.get(0).text().split(" ", 2);
-				//p = output.
+				// String[] output = nom.get(0).text().split(" ", 2);
+				// p = output.
 				// System.out.println("nom: " + p);
-				ex.setNom( nom.get(0).text());
+				ex.setNom(nom.get(0).text());
 
 				// System.out.println("specialité: " + specialite.get(0).text());
 				ex.setSpecialite(specialite.get(0).text());
@@ -123,7 +123,7 @@ System.out.println(url);
 				ex.setPhoto(photo);
 				ex.setProfile(profil);
 
-				System.out.println("-------------");
+				// System.out.println("-------------");
 			}
 			list.add(ex);
 
@@ -145,9 +145,8 @@ System.out.println(url);
 		String profil;
 		int nb = 0;
 		ArrayList<Extract> list = new ArrayList<>();
-String url = "https://www.doctolib.fr/" + spec + "/" + place + "?page=" + pagenumber;
-		doc = Jsoup.connect(url)
-				.userAgent("Mozilla").timeout(25000).get();
+		String url = "https://www.doctolib.fr/" + spec + "/" + place + "?page=" + pagenumber;
+		doc = Jsoup.connect(url).userAgent("Mozilla").timeout(25000).get();
 		Elements tableRows = doc.getElementsByClass("dl-search-result-presentation");
 
 		for (Element row : tableRows) {
@@ -160,15 +159,15 @@ String url = "https://www.doctolib.fr/" + spec + "/" + place + "?page=" + pagenu
 			photo = row.getElementsByTag("img").attr("src");
 			profil = row.getElementsByTag("a").attr("href");
 
-			System.out.println("photo "+photo);
+			//System.out.println("photo " + photo);
 //				System.out.println("profil "+profil);
 			if (!nom.isEmpty() && !specialite.isEmpty()) {
 				// System.out.println("nom: " + nom.get(0).text());
-				//String[] output = nom.get(0).text().split(" ", 2);
-				//String p = output[1];
+				// String[] output = nom.get(0).text().split(" ", 2);
+				// String p = output[1];
 
 				// System.out.println("nom: " + p);
-				ex.setNom( nom.get(0).text());
+				ex.setNom(nom.get(0).text());
 
 				// System.out.println("specialité: " + specialite.get(0).text());
 				ex.setSpecialite(specialite.get(0).text());
@@ -179,7 +178,7 @@ String url = "https://www.doctolib.fr/" + spec + "/" + place + "?page=" + pagenu
 				ex.setPhoto(photo);
 				ex.setProfile(profil);
 
-				System.out.println("-------------");
+				//System.out.println("-------------");
 			}
 			list.add(ex);
 
@@ -211,7 +210,7 @@ String url = "https://www.doctolib.fr/" + spec + "/" + place + "?page=" + pagenu
 		Extract ex = new Extract();
 
 		doc = Jsoup.connect(url).userAgent("Mozilla").timeout(25000).get();
-		System.out.println(url);
+		
 
 		Elements tableRows = doc.getElementsByClass("dl-profile-wrapper");
 		Elements tableRows2 = doc.getElementsByClass("dl-profile-card");
@@ -227,7 +226,7 @@ String url = "https://www.doctolib.fr/" + spec + "/" + place + "?page=" + pagenu
 
 			{
 				telephone = tabrow.get(1).getElementsByClass("dl-display-flex").text();
-				System.out.println("phone= " + telephone);
+				//System.out.println("phone= " + telephone);
 				ex.setTelephone(telephone);
 			}
 			System.out.println("phone= " + telephone);
@@ -244,11 +243,11 @@ String url = "https://www.doctolib.fr/" + spec + "/" + place + "?page=" + pagenu
 			ex.setPrenom(firstname);
 			ex.setSpecialite(specialite.get(0).text());
 			ex.setPhoto(photo);
-			System.out.println("photo: "+photo);
+		//	System.out.println("photo: " + photo);
 			return ex;
 			// }
 		} else
-			System.out.println("null");
+			System.out.println("doctor not found in doctlib, please make sure of your name and city");
 		return null;
 
 	}
