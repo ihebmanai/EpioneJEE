@@ -1,22 +1,23 @@
 package tn.esprit.epione.services;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import tn.esprit.epione.interfaces.UserServiceLocal;
 import tn.esprit.epione.persistance.Administrator;
-import tn.esprit.epione.persistance.Course;
 import tn.esprit.epione.persistance.Doctor;
 import tn.esprit.epione.persistance.Patient;
+import tn.esprit.epione.persistance.Role;
 import tn.esprit.epione.persistance.User;
 import tn.esprit.epione.util.SendConfirmationMail;
 import tn.esprit.epione.util.Util;
@@ -30,33 +31,47 @@ public class UserService implements UserServiceLocal {
 
 	@Override
 	public int addDoctor(Doctor user) {// SignUP
-		String crypted_pwd = encrypt(user.getPassword());
-		user.setPassword(crypted_pwd);
+		user.setPassword(Util.hashPassword(user.getPassword()));
+		user.setRole(Role.doctor);
 		em.persist(user);
 		em.flush();
 		return user.getId();
+	}
+
+	public List<Doctor> listDoctor = new ArrayList<>();
+
+	@Override
+	public List<Doctor> ListDoctor() {
+
+		TypedQuery<Doctor> query = em.createQuery("SELECT d FROM Doctor d", Doctor.class);
+
+		return listDoctor = query.getResultList();
+
 	}
 
 	@Override
 	public int addPatient(Patient user) {// SignUP
-		String crypted_pwd = encrypt(user.getPassword());
-		user.setPassword(crypted_pwd);
-		Course c = new Course();
-		
+		user.setPassword(Util.hashPassword(user.getPassword()));
+		user.setRole(Role.patient);
 		em.persist(user);
 		em.flush();
-		c.setPatient(user);
-		em.persist(c);
-		em.flush();
-		user.setCourse(c);
-		em.merge(user);
 		return user.getId();
+	}
+
+	public List<Patient> listPatient = new ArrayList<>();
+
+	@Override
+	public List<Patient> ListPatient() {
+
+		TypedQuery<Patient> query = em.createQuery("SELECT p FROM Patient p", Patient.class);
+
+		return listPatient = query.getResultList();
+
 	}
 
 	@Override
 	public int addAdministrator(Administrator user) {// SignUP
-		String crypted_pwd = encrypt(user.getPassword());
-		user.setPassword(crypted_pwd);
+		user.setPassword(Util.hashPassword(user.getPassword()));
 		em.persist(user);
 		em.flush();
 		return user.getId();
@@ -80,6 +95,7 @@ public class UserService implements UserServiceLocal {
 	@Override
 	public boolean signOut(User user) {
 		User u = em.find(User.class, user.getId());
+		//Disconnect
 		em.merge(u);
 		return true;
 	}
@@ -92,7 +108,7 @@ public class UserService implements UserServiceLocal {
 		String token_db = u.getToken();
 		System.out.println(token_db);
 		if (token.equals(token_db)) {
-			
+			//Activate in database
 			em.merge(u);
 			System.out.println("token is valid ! Account is confirmed.");
 			return true;
@@ -105,10 +121,9 @@ public class UserService implements UserServiceLocal {
 	@Override
 	public boolean changePassword(String oldPassword, String newPassword, User u) {
 		User user = em.find(User.class, u.getId());
-		String decrypted = decrypt(oldPassword);
-		if (decrypted.equals(user.getPassword())) {
-			String crypted_new = encrypt(newPassword);
-			user.setPassword(crypted_new);
+		if (Util.hashPassword(oldPassword).equals(user.getPassword())) {
+			user.setPassword(Util.hashPassword(newPassword));
+
 			em.merge(user);
 			System.out.println("Password changed: old pwd is " + oldPassword + " new password is " + newPassword);
 			return true;
@@ -119,22 +134,30 @@ public class UserService implements UserServiceLocal {
 	}
 
 	@Override
-	public void forgotPasswordByMail(User user) {
-		String token = getSaltString();
-		String mail_content = "Enter the token generated and have the oppotunity to change your password -->" + token;
-		SendConfirmationMail.sendMail("epioneservice@gmail.com", "epione2018", user.getEmail(), "forgot password",
-				mail_content);
-		User u = em.find(User.class, user.getId());
-		u.setToken(token);
-		em.merge(u);
+	public boolean forgotPasswordByMail(int  idUser) {
+		try {
+			User u = em.find(User.class, idUser);
+			
+			String token = Util.getSaltString();
+			String mail_content = "Enter the token generated and have the oppotunity to change your password --> "+ token;
+			System.out.println("**************** Processing sending an email to : "+u.getEmail() +" **************************");
+			SendConfirmationMail.sendMail("epioneservice@gmail.com", "epione2018", u.getEmail(), "Epione : forgot password",mail_content);
+			
+			u.setToken(token);
+			em.merge(u);
+			System.out.println("**************** DONE Sending **************************");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
-	public boolean changeForgotPassword(String token, String newPwd, User user) {
-		User u = em.find(User.class, user.getId());
-		String crypted = encrypt(newPwd);
-		if (isTokenValid(token, user.getId())) {
-			u.setPassword(crypted);
+	public boolean changeForgotPassword(int idUser, String token, String newPwd) {
+		User u = em.find(User.class, idUser);
+		if (isTokenValid(token, idUser)) {
+			u.setPassword(Util.hashPassword(newPwd));
 			em.merge(u);
 			return true;
 		}
@@ -143,15 +166,13 @@ public class UserService implements UserServiceLocal {
 
 	@Override
 	public User findUserById(int id) {
-		User u = em.find(User.class, id);
-		return u;
+		return em.find(User.class, id);
 	}
 
 	@Override
 	public List<User> getAllUsers() {
-		Query q = em.createQuery("select u from User u");
-		List<User> l = q.getResultList();
-		return l;
+		TypedQuery<User> q = em.createQuery("select u from User u", User.class);
+		return q.getResultList();
 	}
 
 
@@ -188,60 +209,37 @@ public class UserService implements UserServiceLocal {
 		em.merge(u);
 	}
 
+	@Override
+	public boolean banAccount(User u) {
+		User us = em.find(User.class, u.getId());
+		//Delete or change in db
+		em.merge(us);
+		return true;
+	}
+
 	// ****************** PRIVATE METHODS ***************************
 
 	private boolean signIn(String fieldName, String fieldValue, String pwd) {
-		String crypted_pwd = encrypt(pwd);
 
-		Query tq = em
-				.createQuery("select u FROM User u WHERE u." + fieldName + "=:fieldValue AND u.password=:password");
-		tq.setParameter("fieldValue", fieldValue.trim());
-		tq.setParameter("password", crypted_pwd);
-		List<User> userlst = tq.getResultList();
+		Query q = em.createNativeQuery("select id FROM User u WHERE u." + fieldName + " = '" + fieldValue.trim()
+				+ "' AND u.password= '" + Util.hashPassword(pwd) + "'");
 
-		if ((userlst == null) || (userlst.isEmpty())) {
+		int id = (int) q.getSingleResult();
+
+		User user;
+		if (id > 0)
+			user = em.find(User.class, id);
+		else
 			return false;
-		}
-		User user = userlst.get(0);
 
-		if (user != null) {
-			User u = em.find(User.class, user.getId());
-			u.setLastLogin(Util.getDateNowUTC());
-			em.merge(u);
-			return true;
-		}
-		return false;
+		User u = em.find(User.class, user.getId());
+		//Set Connected status in db
+		u.setLastLogin(Util.getDateNowUTC());
+		em.merge(u);
+		return true;
 	}
 
-	private String encrypt(String password) {
-		String crypt = "";
-		for (int i = 0; i < password.length(); i++) {
-			int c = password.charAt(i) ^ 48;
-			crypt = crypt + (char) c;
-		}
-		return crypt;
-	}
 
-	private String decrypt(String password) {
-		String aCrypter = "";
-		for (int i = 0; i < password.length(); i++) {
-			int c = password.charAt(i) ^ 48;
-			aCrypter = aCrypter + (char) c;
-		}
-		return aCrypter;
-	}
-
-	private String getSaltString() {
-		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-		StringBuilder salt = new StringBuilder();
-		Random rnd = new Random();
-		while (salt.length() < 10) { // length of the random string.
-			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
-			salt.append(SALTCHARS.charAt(index));
-		}
-		String saltStr = salt.toString();
-		return saltStr;
-	}
 
 	private boolean isTokenValid(String token, int id) {
 		User u = em.find(User.class, id);

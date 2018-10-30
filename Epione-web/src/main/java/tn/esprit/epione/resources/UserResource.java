@@ -1,6 +1,5 @@
 package tn.esprit.epione.resources;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
@@ -38,10 +37,12 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import tn.esprit.epione.interfaces.UserServiceLocal;
+import tn.esprit.epione.persistance.Administrator;
 import tn.esprit.epione.persistance.Doctor;
 import tn.esprit.epione.persistance.Patient;
 import tn.esprit.epione.persistance.User;
 import tn.esprit.epione.utilities.Secured;
+import tn.esprit.epione.utilities.Util;
 
 @Path("user")
 @RequestScoped
@@ -64,14 +65,38 @@ public class UserResource {
 	@Path("authentication")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response authenticateUser(@QueryParam("username") String username, @QueryParam("password") String password) {
+	public Response authenticateUserByUsername(@QueryParam("username") String username,
+			@QueryParam("password") String password) {
 		try {
 
 			// Authenticate the user using the credentials provided
-//			us.signIn(username, password);
+			us.signInWithUsername(username, password);
 
 			// Issue a token for the user
 			String token = issueToken(username);
+
+			// Return the token on the response
+			return Response.ok(token).build();
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return Response.status(Response.Status.FORBIDDEN).entity("Can't get token for the user !").build();
+		}
+	}
+
+	@POST
+	@Path("authentication")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response authenticateUserByEmail(@QueryParam("email") String email,
+			@QueryParam("password") String password) {
+		try {
+
+			// Authenticate the user using the credentials provided
+			us.signInWithEmail(email, password);
+
+			// Issue a token for the user
+			String token = issueToken(email);
 
 			// Return the token on the response
 			return Response.ok(token).build();
@@ -100,16 +125,16 @@ public class UserResource {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUser(@PathParam("id") int idUser) {
-		
-		return Response.status(Response.Status.FOUND).entity(us.findUserById(idUser)).build();
+
+		return Response.status(Response.Status.FOUND).entity(us.getUserById(idUser)).build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllUsers() {
 		return Response.status(Response.Status.FOUND).entity(us.getAllUsers()).build();
 	}
-	
+
 	@POST
 	@Path("addDoctor")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -127,21 +152,30 @@ public class UserResource {
 		return Response.status(Response.Status.CREATED).entity(id).build();
 	}
 
+	@POST
+	@Path("addAdministrator")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addAdministrator(Administrator user) {
+		int id = us.addAdministrator(user);
+
+		return Response.status(Response.Status.CREATED).entity(id).build();
+	}
 
 	@POST
 	@Path("login")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response signInWithUsername(@QueryParam("username") String username,@QueryParam("password") String password) {
+	public Response signInWithUsername(@QueryParam("username") String username,
+			@QueryParam("password") String password) {
 		if (us.signInWithUsername(username, password)) {
 			return Response.status(200).build();
 		}
 		return Response.status(401).entity("Login or Password unvalid !").build();
 	}
-	
+
 	@POST
 	@Path("login")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response signInWithEmail(@QueryParam("email") String email,@QueryParam("password") String password) {
+	public Response signInWithEmail(@QueryParam("email") String email, @QueryParam("password") String password) {
 		if (us.signInWithEmail(email, password)) {
 			return Response.status(200).build();
 		}
@@ -180,22 +214,23 @@ public class UserResource {
 	}
 
 	@PUT
-	@Path("/forgotByMail")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response ForgotPasswordByMail(User u) {
-		us.forgotPasswordByMail(u);
-		return Response.status(Status.ACCEPTED).build();
+	@Path("/forgotByMail/{id}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response forgotPasswordByMail(@PathParam("id") int idUser) {
+		if (us.forgotPasswordByMail(idUser))
+			return Response.ok("mail sent").build();
+		return Response.ok("mail failed").build();
+
 	}
 
 	@PUT
-	@Path("forgot/{newtoken}/{newPwd}")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("forgot/{id}/{newtoken}/{newPwd}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response changeForgotPassword(@PathParam("newtoken") String token, @PathParam("newPwd") String newPwd,
-			User u) {
+			@PathParam("id") int idUser) {
 
 		if (newPwd.length() > 8) {
-			if (us.changeForgotPassword(token, newPwd, u)) {
+			if (us.changeForgotPassword(idUser, token, newPwd)) {
 				return Response.status(Status.ACCEPTED).entity("Your password is changed ! ").build();
 			} else
 				return Response.status(Status.NOT_ACCEPTABLE).entity("Token is not valid ! please verify you mail box")
@@ -206,6 +241,16 @@ public class UserResource {
 
 	}
 
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response desactivateAccount(User u) {
+		if (us.banAccount(u)) {
+			return Response.status(Status.ACCEPTED)
+					.entity("Account has been desactivated :( hope to see you soon again !").build();
+		} else {
+			return Response.status(Status.NOT_ACCEPTABLE).entity("Account desactivation failed").build();
+		}
+	}
 
 	@GET
 	@Path("nbrLoggedIn")
@@ -215,10 +260,10 @@ public class UserResource {
 	}
 
 	@PUT
+	@Path("addPhoto/{id}")
 	@Consumes("multipart/form-data")
-	public Response addPhoto(MultipartFormDataInput input) {
-		int uid = 0;
-		String finalPath = "";
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addPhoto(MultipartFormDataInput input, @PathParam(value = "id") int idUser) {
 
 		// les formats de données
 		List<String> formatFile = new ArrayList<String>();
@@ -226,62 +271,55 @@ public class UserResource {
 		formatFile.add("jpg");
 		formatFile.add("png");
 
+		User u = us.findUserById(idUser);
+		if (u == null)
+			return Response.status(Status.NOT_ACCEPTABLE).entity("User not found ! ").build();
+
+		String fileName = "";
+
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
 		List<InputPart> inputParts = uploadForm.get("file");
-		List<InputPart> userParts = uploadForm.get("user");
+		InputPart inputPart = inputParts.get(0);
 
-		for (InputPart inputPart : inputParts) {
-			MultivaluedMap<String, String> headers = inputPart.getHeaders();
-			try {
-				InputStream inputStream = inputPart.getBody(InputStream.class, null);
-				byte[] bytes = IOUtils.toByteArray(inputStream);
-				String filename = getFileName(headers);
+		try {
 
-				// format file test
-				String extension = "";
-				int i = filename.lastIndexOf('.');
-				if (i >= 0) {
-					extension = filename.substring(i + 1);
-				}
+			MultivaluedMap<String, String> header = inputPart.getHeaders();
+			fileName = Util.getFileName(header);
 
-				if (!formatFile.contains(extension)) {
-					return Response.status(Status.NOT_ACCEPTABLE)
-							.entity("Format not supported  please use .jpeg .jpg .png  format").build();
-				}
-				// end of file format test
+			// format file
+			String extension = "";
+			int i = fileName.lastIndexOf('.');
+			if (i >= 0)
+				extension = fileName.substring(i + 1);
 
-				String fileLocation = "C:\\epione\\images\\" + UUID.randomUUID().toString() + filename;
+			if (!formatFile.contains(extension))
+				return Response.status(Status.NOT_ACCEPTABLE).entity("Format of file not supported !!").build();
 
-				int index = fileLocation.lastIndexOf("images") + 7;
-				finalPath = fileLocation.substring(index);
+			// end of format file
 
-				// create file
-				FileOutputStream fileOuputStream = new FileOutputStream(fileLocation);
-				fileOuputStream.write(bytes);
+			// convert the uploaded file to inputstream
+			InputStream inputStream = inputPart.getBody(InputStream.class, null);
+			byte[] bytes = IOUtils.toByteArray(inputStream);
 
-			} catch (IOException e) {
-				return Response.status(Status.NOT_ACCEPTABLE).entity("Bad format, error parsing file.").build();
-			}
+			fileName = UUID.randomUUID().toString() + "." + extension;
+			Util.writeFile(bytes, fileName);// in .. Epione/Files
+
+			System.out.println("Done");
+
+//			Call service (persist)
+			us.addUserPhoto(idUser, fileName);
+
+			return Response.status(200).entity(fileName).build();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Status.NOT_ACCEPTABLE).entity("upload failed !").build();
 		}
 
-		// get id
-		String[] contentDisposition = new String[1000];
-		for (InputPart inputPart : userParts) {
-			MultivaluedMap<String, String> headers = inputPart.getHeaders();
-			contentDisposition = headers.getFirst("Content-Disposition").split(";");
-			try {
-				String userid = inputPart.getBodyAsString();
-				uid = Integer.parseInt(userid);
-				System.out.println(uid);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+//				// create file
+//				FileOutputStream fileOuputStream = new FileOutputStream(fileLocation);
+//				fileOuputStream.write(bytes);
 
-		// Call service (persist)
-		us.addUserPhoto(uid, finalPath);
-
-		return Response.status(Status.OK).entity("Photo added.").build();
 	}
 
 	// ======================================
@@ -307,26 +345,4 @@ public class UserResource {
 	private Date toDate(LocalDateTime localDateTime) {
 		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	}
-
-	private String getFileName(MultivaluedMap<String, String> headers) {
-		String[] contentDisposition = headers.getFirst("Content-Disposition").split(";");
-
-		for (String filename : contentDisposition) {
-			if ((filename.trim().startsWith("filename"))) {
-
-				String[] name = filename.split("=");
-
-				String finalFileName = sanitizeFilename(name[1]);
-				return finalFileName;
-			}
-		}
-
-		return "unknown";
-	}
-
-	private String sanitizeFilename(String s) {
-		return s.trim().replaceAll("\"", "");
-	}
-
-
 }
