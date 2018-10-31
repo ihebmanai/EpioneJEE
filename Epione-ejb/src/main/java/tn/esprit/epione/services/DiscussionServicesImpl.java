@@ -88,7 +88,7 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	public List<Message> getMessageLastDays(int discussionId, int days) {
 		try {
 			TypedQuery<Message> q = em.createQuery("select m from Message m where (m.discussion.id = :cid) "
-					+ " and ( (  TO_DAYS(NOW()) - TO_DAYS(m.sendingDate) ) <= :days ) " + "order by m.sendingDate",
+					+ " and ( (  TO_DAYS(NOW()) - TO_DAYS(m.timeSent) ) <= :days ) " + "order by m.timeSent",
 					Message.class);
 			q.setParameter("cid", discussionId).setParameter("days", new Long(days));
 			return q.getResultList();

@@ -130,6 +130,27 @@ public class AnalyticsServices implements AnalyticsInterface{
 		System.out.println("rendez vous:" + avs.size());
 		return avs;
 	}
+	@Override
+	public List<Appointment> GetAppointmentByDoc(int idDoc,Date date) {
+		List<Appointment> appointments = new ArrayList<>();
+		Doctor d=em.find(Doctor.class, idDoc);
+		TypedQuery<Appointment> query = em.createQuery(
+				"select e from Appointment e where e.doctor=:idDoc and e.date_appointment=:d ORDER BY e.date_appointment",
+				Appointment.class);
+		appointments = query.setParameter("idDoc",d).setParameter("d",date).getResultList();
+		return appointments;
+	}
+
+	@Override
+	public List<Appointment> GetAppointmentByDocandMonth(int idDoc, Date dateOne, Date dateTwo) {
+		List<Appointment> appointments = new ArrayList<>();
+		Doctor d=em.find(Doctor.class, idDoc);
+		TypedQuery<Appointment> query = em.createQuery(
+				"select e from Appointment e where e.doctor=:idDoc and e.date_appointment BETWEEN :dOne and :dTwo ORDER BY e.date_appointment",
+				Appointment.class);
+		appointments = query.setParameter("idDoc",d).setParameter("dOne", dateOne).setParameter("dTwo", dateTwo).getResultList();
+		return appointments;		
+	}
 	
 	
 	

@@ -15,6 +15,7 @@ import javax.persistence.TypedQuery;
 
 import tn.esprit.epione.interfaces.UserServiceLocal;
 import tn.esprit.epione.persistance.Administrator;
+import tn.esprit.epione.persistance.Course;
 import tn.esprit.epione.persistance.Doctor;
 import tn.esprit.epione.persistance.Patient;
 import tn.esprit.epione.persistance.Role;
@@ -53,8 +54,15 @@ public class UserService implements UserServiceLocal {
 	public int addPatient(Patient user) {// SignUP
 		user.setPassword(Util.hashPassword(user.getPassword()));
 		user.setRole(Role.patient);
+		Course c = new Course();
 		em.persist(user);
 		em.flush();
+		c.setPatient(user);
+		em.persist(c);
+		em.flush();
+		user.setCourse(c);
+		em.merge(user);
+		
 		return user.getId();
 	}
 
