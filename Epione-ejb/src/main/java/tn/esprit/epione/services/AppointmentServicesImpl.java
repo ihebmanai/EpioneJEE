@@ -86,7 +86,7 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	public List<Appointment> getAll() {
 		
 		List<Appointment> appointments = new ArrayList<>();
-		TypedQuery <Appointment> query= em.createQuery("select e from Appointment e ",Appointment.class);
+		TypedQuery <Appointment> query= em.createQuery("select e from Appointment e ORDER BY e.date_appointment DESC",Appointment.class);
 		appointments = query.getResultList();
 		System.out.println("rendez vous:"+appointments.size());
 		return appointments ;
