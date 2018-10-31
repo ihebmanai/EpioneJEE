@@ -28,32 +28,21 @@ public class ChatResource {
 
 	@POST
 	@Path("{idDoctor}/{idPatient}")
-	public Response addDiscussion(@PathParam("idDoctor") int idDoctor, @PathParam("idPatient") int idPatient) {
-		Discussion c = new Discussion();
-		c.setDoctor(new Doctor(idDoctor));
-		c.setPatient(new Patient(idPatient));
-		int id = cs.addDiscussion(c);
-		if (id > -1)
-			return Response.status(Response.Status.CREATED).entity(id).build();
-		return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Discussion creation failed !!").build();
-	}
-
-	@POST
-	@Path("{idDiscussion}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response sendMessage(@PathParam("idDiscussion") int idDiscussion, Message msg) {
-		int id = cs.sendMsg(idDiscussion, msg);
+	public Response sendMessage(@PathParam("idDoctor") int idDoctor, @PathParam("idPatient") int idPatient, Message msg) {
+		int id = cs.sendMsg(idDoctor, idPatient, msg);
 		if (id > -1)
 			return Response.status(Response.Status.CREATED).entity(id).build();
 		return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Message failed").build();
 	}
-	
+
 	@POST
 	@Path("/seen/{idDiscussion}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response seenDiscussion(@PathParam("idDiscussion") int idDiscussion) {
 		if (cs.seenDiscussion(idDiscussion))
-			return Response.status(Response.Status.ACCEPTED).entity("Discussion marked seen with now date UTC").build();
+			return Response.status(Response.Status.ACCEPTED).entity("Discussion marked seen with now date UTC")
+					.build();
 		return Response.status(Response.Status.NOT_ACCEPTABLE).entity("NOt Valid discussion id !").build();
 	}
 
@@ -102,9 +91,9 @@ public class ChatResource {
 	@GET
 	@Path("all/{idUser}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getMyDiscussions(@PathParam("idUser") int idUser) {
+	public Response getDiscussionsByUser(@PathParam("idUser") int idUser) {
 
-		List<Discussion> c = cs.getDiscussions(idUser);
+		List<Discussion> c = cs.getDiscussionsByUser(idUser);
 		if (c != null)
 			return Response.status(Response.Status.FOUND).entity(c).build();
 		return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Get Discussions failed !!").build();
@@ -129,5 +118,4 @@ public class ChatResource {
 		return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Discussion deletion failed !!").build();
 
 	}
-
 }

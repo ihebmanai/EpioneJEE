@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -37,11 +38,33 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	}
 
 	@Override
-	public int sendMsg(int idDiscussion, Message msg) {
+	public int sendMsg(int idDoctor, int idPatient, Message msg) {
 
 		try {
-//			msg.setStatus(MessageStatus.sent);
-			Discussion c = em.find(Discussion.class, idDiscussion);
+
+			TypedQuery<Discussion> q;
+			Discussion c;
+			try {
+				q = em.createQuery(
+						"select c from Discussion c where (c.doctor.id = :idDoctor and c.patient.id = :idPatient)",
+						Discussion.class);
+				q.setParameter("idDoctor", idDoctor).setParameter("idPatient", idPatient);
+				c = q.getSingleResult();
+			} catch (NoResultException e) {
+				System.out.println("*****************" + e.getMessage());
+				c = new Discussion();
+				c.setDoctor(new Doctor(idDoctor));
+				c.setPatient(new Patient(idPatient));
+				int idDiscussion = addDiscussion(c);
+
+				c = em.find(Discussion.class, idDiscussion);
+
+				msg.setDiscussion(c);
+
+				em.persist(msg);
+				em.flush();
+				return msg.getId();
+			}
 			c.getMessages().add(msg);
 			msg.setDiscussion(c);
 
@@ -64,10 +87,10 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	@Override
 	public List<Message> getMessageLastDays(int discussionId, int days) {
 		try {
-			TypedQuery<Message> q = em.createQuery("select m from Message m where (m.discussion = :cid) "
-					+ " and ( (  TO_DAYS(NOW()) - TO_DAYS(m.timeSent) ) <= " + days + " ) "
-					+ "order by m.timeSent", Message.class);
-			q.setParameter("cid", em.find(Discussion.class, discussionId));
+			TypedQuery<Message> q = em.createQuery("select m from Message m where (m.discussion.id = :cid) "
+					+ " and ( (  TO_DAYS(NOW()) - TO_DAYS(m.sendingDate) ) <= :days ) " + "order by m.sendingDate",
+					Message.class);
+			q.setParameter("cid", discussionId).setParameter("days", new Long(days));
 			return q.getResultList();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -79,8 +102,8 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	public Discussion getDiscussion2Users(int idDoctor, int idPatient) {
 		try {
 			TypedQuery<Discussion> q = em.createQuery(
-					"select c from Discussion c where (c.patient= :p and c.doctor= :d)", Discussion.class);
-			q.setParameter("p", new Patient(idPatient)).setParameter("d", new Doctor(idDoctor));
+					"select c from Discussion c where (c.patient.id= :p and c.doctor.id= :d)", Discussion.class);
+			q.setParameter("p", idPatient).setParameter("d", idDoctor);
 			return (Discussion) q.getSingleResult();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -93,8 +116,8 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	public Discussion getDiscussion2UsersLastDays(int idDoctor, int idPatient, int days) {
 		try {
 			TypedQuery<Discussion> q = em.createQuery(
-					"select c from Discussion c where (c.patient= :p and c.doctor= :d)", Discussion.class);
-			q.setParameter("p", new Patient(idPatient)).setParameter("d", new Doctor(idDoctor));
+					"select c from Discussion c where (c.patient.id= :p and c.doctor.id= :d)", Discussion.class);
+			q.setParameter("p", idPatient).setParameter("d", idDoctor);
 			Discussion c = (Discussion) q.getSingleResult();
 			c.setMessages(getMessageLastDays(c.getId(), days));
 			return c;
@@ -105,22 +128,18 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	}
 
 	@Override
-	public List<Discussion> getDiscussions(int idUser) {
+	public List<Discussion> getDiscussionsByUser(int idUser) {
 
 		try {
 			User u = em.find(User.class, idUser);
+			if (u == null)
+				return null;
 
 			TypedQuery<Discussion> q = em.createQuery(
-					"select c from Discussion c where  c.doctor= :idUser order by c.creationTime",
+					"select c from Discussion c where  ((c.doctor.id= :idUser) or (c.patient.id = :idUser)) order by c.creationTime",
 					Discussion.class);
-			q.setParameter("idUser", new Doctor(idUser));
 
-			if (u.getRole() == Role.patient) {
-				q = em.createQuery("select c from Discussion c where c.patient= :idUser order by c.creationTime",
-						Discussion.class);
-				q.setParameter("idUser", new Patient(idUser));
-			}
-
+			q.setParameter("idUser", idUser);
 			return q.getResultList();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -134,17 +153,16 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 		try {
 			User u = em.find(User.class, idUser);
 
-			TypedQuery<Discussion> q = em.createQuery("select c from Discussion c where (c.doctor= :idUser) "
-					+ " and ((TO_DAYS(NOW()) - TO_DAYS(c.creationTime)) <= " + days + ") order by c.creationTime",
-					Discussion.class);
-			q.setParameter("idUser", new Doctor(idUser));
+			if (u == null)
+				return null;
 
-			if (u.getRole() == Role.patient) {
-				q = em.createQuery("select c from Discussion c where (c.patient= :idUser) "
-						+ " and ((TO_DAYS(NOW()) - TO_DAYS(c.creationTime)) <= " + days + ") order by c.creationTime",
-						Discussion.class);
-				q.setParameter("idUser", new Patient(idUser));
-			}
+			TypedQuery<Discussion> q = em.createQuery(
+					"select c from Discussion c where ((c.doctor.id= :idUser) or (c.patient.id = :idUser)) "
+							+ " and ((TO_DAYS(NOW()) - TO_DAYS(c.creationTime)) <= " + days
+							+ ") order by c.creationTime",
+					Discussion.class);
+			q.setParameter("idUser", idUser);
+
 			return q.getResultList();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -196,5 +214,4 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 		}
 		return true;
 	}
-
 }
