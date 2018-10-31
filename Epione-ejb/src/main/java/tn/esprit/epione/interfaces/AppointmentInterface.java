@@ -7,7 +7,7 @@ import javax.ejb.Local;
 import tn.esprit.epione.persistance.Appointment;
 @Local
 public interface AppointmentInterface {
-	
+	//interfces
 	public List<Appointment> GetAppointmentByDoc(int idDoc);
 	public void AcceptAppointment(int idApp);
 	public void RefuseAppointment(int idApp);
