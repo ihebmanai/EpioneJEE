@@ -3,13 +3,17 @@ package tn.esprit.epione.resources;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import tn.esprit.epione.interfaces.AnalyticsInterface;
+import tn.esprit.epione.persistance.Availibility;
 
 @Path("Analytics")
 public class AnalyticsRessource {
@@ -70,6 +74,15 @@ public class AnalyticsRessource {
 	public Response getNumberOfAcceptedAppointements()
 	{
 		long nbr=analytics.getAcceptedRequest();
+		return Response.status(Response.Status.OK).entity(nbr).build();
+	}
+	
+	@GET
+	@Path("/availability/{idDoctor}")
+	@Produces("application/json")
+	public Response getavailability(@PathParam("idDoctor")int idDoctor)
+	{
+		List<Availibility> nbr=analytics.GetAllAvabyDoc(idDoctor);
 		return Response.status(Response.Status.OK).entity(nbr).build();
 	}
 
