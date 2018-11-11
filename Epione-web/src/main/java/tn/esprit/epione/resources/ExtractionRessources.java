@@ -78,7 +78,11 @@ ArrayList<Extract> test= extract.SearchBySpecialityandPlace(specialite, place, p
 	public Response AddDoctor(Extract e) throws IOException
 	{
 		//Extract ex=extract.searchexistingdoctor(nom, prenom, specialite);
+<<<<<<< HEAD
 		Doctor u=extract.AddDoctor(e.getNom(), e.getPrenom(), e.getSpecialite(),Util.hashPassword(e.getPassword()));
+=======
+		Doctor u=extract.AddDoctor(e.getNom(), e.getPrenom(), e.getSpecialite());
+>>>>>>> 78304ac7f02f8504248b85dfd8b72668d0c19a45
 		if(u==null)
 		{
 			return Response.status(Status.NOT_FOUND).entity("doctor not found in doctlib, please make sure of your name and speciality").build();
