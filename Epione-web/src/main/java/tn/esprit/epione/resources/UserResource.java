@@ -61,7 +61,7 @@ public class UserResource {
 	 * ******************************* To get valid token !!
 	 * http://localhost:8089/epione-web/user/authentication
 	 */
-	@POST
+/*	@POST
 	@Path("authentication")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -83,6 +83,7 @@ public class UserResource {
 			return Response.status(Response.Status.FORBIDDEN).entity("Can't get token for the user !").build();
 		}
 	}
+	*/
 
 	@POST
 	@Path("authentication")
