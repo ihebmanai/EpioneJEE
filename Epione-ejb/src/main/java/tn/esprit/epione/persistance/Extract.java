@@ -18,7 +18,7 @@ private String specialite;
 private String profile ;
 private String photo;
 private String telephone;
-
+private String password;
 public String getTelephone() {
 	return telephone;
 }
@@ -35,11 +35,28 @@ public void setTelephone(String telephone) {
 
 
 
-public Extract(String nom, String adresse, String specialite) {
+public String getPassword() {
+	return password;
+}
+
+
+
+
+
+public void setPassword(String password) {
+	this.password = password;
+}
+
+
+
+
+
+public Extract(String nom, String adresse, String specialite,String password) {
 	super();
 	this.nom = nom;
 	this.adresse = adresse;
 	this.specialite = specialite;
+	this.password = password;
 }
 
 

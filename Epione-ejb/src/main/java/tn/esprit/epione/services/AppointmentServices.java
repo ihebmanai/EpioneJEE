@@ -32,7 +32,7 @@ public class AppointmentServices implements AppointmentInterface {
 				"select e from Appointment e where e.doctor=" + idDoc + " ORDER BY e.date_appointment",
 				Appointment.class);
 		appointments = query.getResultList();
-		System.out.println("rendez vous:" + appointments.size());
+		System.out.println("rdv" + appointments.size());
 		return appointments;
 	}
 

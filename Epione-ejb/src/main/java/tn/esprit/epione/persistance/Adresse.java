@@ -6,7 +6,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Adresse implements Serializable {
-
+//adresse 
 	private String rue ; 
 	private String ville ;
 	

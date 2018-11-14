@@ -25,19 +25,18 @@ import tn.esprit.epione.util.Util;
 public class Discussion  implements Serializable{
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id ; 
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-	private Date timeSeen ; 
-	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-	private Date creationTime  = Util.getDateNowUTC();
-	// Navigation Properties
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 
-//	@JsonIgnore
-	@OneToMany(mappedBy = "discussion", cascade = CascadeType.DETACH,fetch=FetchType.EAGER)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date lastUpdated = Util.getDateNowUTC();
+
+	private boolean doctorDeleted = false;
+	private boolean patientDeleted = false;
+
+	// Navigation Properties
+	@OneToMany(mappedBy = "discussion", fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE,CascadeType.PERSIST})
 	private List<Message> messages;
 
 	@ManyToOne
@@ -47,50 +46,67 @@ public class Discussion  implements Serializable{
 	@ManyToOne
 	@JoinColumn(name = "doctor_id", referencedColumnName = "id", insertable = true, updatable = true)
 	private Doctor doctor;
-	
-	
-	
-	
+
+	public Discussion() {
+		lastUpdated = Util.getDateNowUTC();
+	}
+
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public Date getLastUpdated() {
+		return Util.NbrHour(lastUpdated, 1);// +1 hour;
+	}
+
+	public void setLastUpdated(Date lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
 	}
 
 	public Patient getPatient() {
 		return patient;
 	}
+
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
+
 	public Doctor getDoctor() {
 		return doctor;
 	}
+
 	public void setDoctor(Doctor doctor) {
 		this.doctor = doctor;
 	}
-	
-	public List<Message> getMessages() {
-		return messages;
+
+	public boolean isDoctorDeleted() {
+		return doctorDeleted;
 	}
-	public void setMessages(List<Message> messages) {
-		this.messages = messages;
+
+	public void setDoctorDeleted(boolean doctorDeleted) {
+		this.doctorDeleted = doctorDeleted;
 	}
-	public Date getTimeSeen() {
-		return  Util.NbrHour(timeSeen, 1);
+
+	public boolean isPatientDeleted() {
+		return patientDeleted;
 	}
-	public void setTimeSeen(Date timeSeen) {
-		this.timeSeen = timeSeen;
-	} 
-	public Date getCreationTime() {
-		return  Util.NbrHour(creationTime, 1);
+
+	public void setPatientDeleted(boolean patientDeleted) {
+		this.patientDeleted = patientDeleted;
 	}
-	public void setCreationTime(Date creationTime) {
-		this.creationTime = creationTime;
-	} 
-	
-	
-	
+
+
 
 }
