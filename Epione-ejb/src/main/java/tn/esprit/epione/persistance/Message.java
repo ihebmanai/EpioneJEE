@@ -94,4 +94,8 @@ public class Message implements Serializable {
 		this.senderId = senderId;
 	}
 
+	public void setSentTime(Date sentTime) {
+		this.sentTime = sentTime;
+	}
+
 }

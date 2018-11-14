@@ -264,4 +264,21 @@ public class UserService implements UserServiceLocal {
 
 	}
 
+	@Override
+	public User findUserByEmail(String email) {
+		Query q = em.createNativeQuery("select id FROM User u WHERE u.email= '" + email.trim()
+		+ "'");
+
+int id = (int) q.getSingleResult();
+
+User user;
+if (id > 0)
+	user = em.find(User.class, id);
+else
+	return null;
+
+User u = em.find(User.class, user.getId());
+return u;
+	}
+
 }

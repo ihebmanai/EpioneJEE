@@ -60,7 +60,7 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 				c = em.find(Discussion.class, idDiscussion);
 
 				msg.setDiscussion(c);
-				
+				msg.setSentTime(Util.getDateNowUTC());
 				em.persist(msg);
 				em.flush();
 				return msg.getId();
@@ -70,6 +70,7 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 
 			c.setLastUpdated(Util.getDateNowUTC());
 			c.getMessages().add(msg);
+			msg.setSentTime(Util.getDateNowUTC());
 			msg.setDiscussion(c);
 			em.persist(msg);
 			em.merge(c);

@@ -61,28 +61,28 @@ public class UserResource {
 	 * ******************************* To get valid token !!
 	 * http://localhost:8089/epione-web/user/authentication
 	 */
-	@POST
-	@Path("authentication")
-	@Produces(MediaType.TEXT_PLAIN)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response authenticateUserByUsername(@QueryParam("username") String username,
-			@QueryParam("password") String password) {
-		try {
-
-			// Authenticate the user using the credentials provided
-			us.signInWithUsername(username, password);
-
-			// Issue a token for the user
-			String token = issueToken(username);
-
-			// Return the token on the response
-			return Response.ok(token).build();
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return Response.status(Response.Status.FORBIDDEN).entity("Can't get token for the user !").build();
-		}
-	}
+//	@POST
+//	@Path("authentication")
+//	@Produces(MediaType.TEXT_PLAIN)
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	public Response authenticateUserByUsername(@QueryParam("username") String username,
+//			@QueryParam("password") String password) {
+//		try {
+//
+//			// Authenticate the user using the credentials provided
+//			us.signInWithUsername(username, password);
+//
+//			// Issue a token for the user
+//			String token = issueToken(username);
+//
+//			// Return the token on the response
+//			return Response.ok(token).build();
+//
+//		} catch (Exception e) {
+//			System.out.println(e.getMessage());
+//			return Response.status(Response.Status.FORBIDDEN).entity("Can't get token for the user !").build();
+//		}
+//	}
 
 	@POST
 	@Path("authentication")
@@ -127,6 +127,14 @@ public class UserResource {
 	public Response getUser(@PathParam("id") int idUser) {
 
 		return Response.status(Response.Status.FOUND).entity(us.getUserById(idUser)).build();
+	}
+	
+	@GET
+	@Path("ByEmail/{email}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUser(@PathParam("email") String email) {
+
+		return Response.status(Response.Status.FOUND).entity(us.findUserByEmail(email)).build();
 	}
 
 	@GET
