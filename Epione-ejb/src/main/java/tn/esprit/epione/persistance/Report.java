@@ -93,6 +93,31 @@ public class Report implements Serializable {
 	public void setCourse(Course course) {
 		this.course = course;
 	}
+	public Report() {
+		super();
+	}
+	public Report(int id, String desease, String objet, String description, Date date, Appointment appointment,
+			Course course, List<Treatments> treatments) {
+		super();
+		this.id = id;
+		this.desease = desease;
+		this.objet = objet;
+		this.description = description;
+		this.date = date;
+		this.appointment = appointment;
+		this.course = course;
+		this.treatments = treatments;
+	}
+	public Report(String report) {
+		
+	}
+	@Override
+	public String toString() {
+		return "Report [id=" + id + ", desease=" + desease + ", objet=" + objet + ", description=" + description
+				+ ", date=" + date + ", appointment=" + appointment + ", course=" + course + ", treatments="
+				+ treatments + "]";
+	}
+	
 	
 	
 	

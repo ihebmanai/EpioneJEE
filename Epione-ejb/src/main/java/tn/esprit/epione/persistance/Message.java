@@ -78,6 +78,10 @@ public class Message implements Serializable {
 		this.seenTime = seenTime;
 	}
 
+	public void setSentTime(Date sentTime) {
+		this.sentTime = sentTime;
+	}
+	
 	public Discussion getDiscussion() {
 		return discussion;
 	}
@@ -92,10 +96,6 @@ public class Message implements Serializable {
 
 	public void setSenderId(int senderId) {
 		this.senderId = senderId;
-	}
-
-	public void setSentTime(Date sentTime) {
-		this.sentTime = sentTime;
 	}
 
 }

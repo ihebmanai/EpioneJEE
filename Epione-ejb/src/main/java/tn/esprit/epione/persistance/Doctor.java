@@ -99,7 +99,15 @@ public class Doctor extends User implements Serializable {
 		return true;
 	}
 
-	
+	public Doctor(String doctor) {
+		super();
+	}
+
+	@Override
+	public String toString() {
+		return "Doctor [codeDoctor=" + codeDoctor + ", flag=" + flag + ", appointments=" + appointments
+				+ ", discussions=" + discussions + "]";
+	}
 	
 	
 	

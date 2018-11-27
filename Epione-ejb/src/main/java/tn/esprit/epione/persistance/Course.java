@@ -51,6 +51,7 @@ public class Course implements Serializable {
 	public Course() {
 		super();
 	}
+	
 	public Course(int id, Date dateOfLastModificaion) {
 		super();
 		this.id = id;
@@ -64,6 +65,19 @@ public class Course implements Serializable {
 	}
 	public void setPatient(Patient patient) {
 		this.patient = patient;
+	}
+	public Course(int id, Patient patient, List<Report> reports) {
+		super();
+		this.id = id;
+		this.patient = patient;
+		this.reports = reports;
+	}
+	public Course(String course) {
+		
+	}
+	@Override
+	public String toString() {
+		return "Course [id=" + id + ", patient=" + patient + ", reports=" + reports + "]";
 	}
 	
 

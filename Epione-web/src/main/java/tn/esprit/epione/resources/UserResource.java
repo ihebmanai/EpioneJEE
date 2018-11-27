@@ -92,6 +92,7 @@ public class UserResource {
 	public Response authenticateUserByEmail(@QueryParam("email") String email,
 			@QueryParam("password") String password) {
 		try {
+			
 
 			// Authenticate the user using the credentials provided
 			us.signInWithEmail(email, password);

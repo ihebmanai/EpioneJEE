@@ -134,7 +134,14 @@ public class CourseService implements ICourseServices {
 		
 		return reportByDesease;
 	}
-	
+	public List<Appointment> getAppointmentsByIdPatient(int idPatient){
+		List<Appointment> appointments = new ArrayList<>();
+		TypedQuery<Appointment> query = em.createQuery(
+				"select e from Appointment e where e.patient.id=" + idPatient ,
+				Appointment.class);
+		appointments = query.getResultList();
+		return appointments;
+	}
 	public List<Report> getAllReportByDeseaseAndDoctor(int patientId,String desease,int doctorId){
 		Patient p=em.find(Patient.class, patientId);
 		Doctor d=em.find(Doctor.class, doctorId);
@@ -159,7 +166,13 @@ public class CourseService implements ICourseServices {
 		return reportByDoctor;
 	}
 	
-	public void addTreatement(Treatments t){
+	public void addTreatement(int idReport,String doctForRecomantion,String date,String nameTreatment){
+		Treatments t=new Treatments();
+		t.setDateTreatments(date);
+		t.setDoctorForRecommandation(doctForRecomantion);
+		t.setNameTreatment(nameTreatment);
+		t.setJustification(null);
+		t.setReport(em.find(Report.class, idReport));
 		em.persist(t);
 	}
 	
@@ -187,9 +200,38 @@ public class CourseService implements ICourseServices {
 	}
 
 	@Override
-	public void addReport(Report r) {
+	public void addReport(int appId,String description,String desease,String objet) {
+		Report r=new Report();
+		Appointment a=em.find(Appointment.class, appId);
+		Course c = this.getCourseByIdPatient(a.getPatient().getId());
+		r.setAppointment(a);
+		r.setCourse(c);
+		r.setDate(new Date());
+		r.setDescription(description);
+		r.setDesease(desease);
+		r.setObjet(objet);
+		r.setTreatments(null);
 		em.persist(r);
 		
+	}
+	
+
+	@Override
+	public Report getReportById(int reportId) {
+		// TODO Auto-generated method stub
+		return em.find(Report.class, reportId);
+	}
+
+	@Override
+	public Course getCourseByIdPatient(int idPatinet) {
+		TypedQuery<Course> query=em.createQuery("select c from Course as c where c.patient.id=:p ",Course.class);
+		Course c= query.setParameter("p", idPatinet).getSingleResult();
+		return c;
+	}
+
+	@Override
+	public Appointment getAppointmentsById(int id) {
+		return em.find(Appointment.class, id);
 	}
 }
 

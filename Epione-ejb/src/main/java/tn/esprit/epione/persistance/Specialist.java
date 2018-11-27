@@ -5,9 +5,11 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 @Entity
 @DiscriminatorValue(value="specialist")
+@PrimaryKeyJoinColumn(name="id")
 public class Specialist extends Doctor implements Serializable{
 	
 	@Column(name="speciality_s")
