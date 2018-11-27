@@ -21,7 +21,10 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.codec.binary.StringUtils;
 
 import tn.esprit.epione.interfaces.ICourseServices;
+import tn.esprit.epione.interfaces.UserServiceLocal;
+import tn.esprit.epione.interfaces.UserServiceRemote;
 import tn.esprit.epione.persistance.*;
+import tn.esprit.epione.services.CourseService;
 
 
 @Path("ressources")
@@ -29,27 +32,27 @@ public class CourseRessources {
 
 	@EJB
 	ICourseServices courseService;
+	@EJB
+	UserServiceLocal userService;
 	
 	
-
 	@POST
-	@Path("addreport")
+	@Path("addreport/{id}/{desc}/{desease}/{object}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addReport(Report r){
-		if(r!=null){
-			courseService.addReport(r);
+	public Response addReport(@PathParam("id")int appId,@PathParam("desc")String description,@PathParam("desease")String desease,@PathParam("object")String object){
+		if(appId>0){
+			courseService.addReport(appId,description,desease,object);
 			return Response.status(Response.Status.OK).entity("createed").build();
 		}else
 			return Response.status(Response.Status.NOT_FOUND).entity("empty").build();	
 	}
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addTreatments(Treatments t){
-		if(t!=null){
-			courseService.addTreatement(t);
+	@Path("addTreatment/{id}/{doctor}/{date}/{name}")
+	public Response addTreatments(@PathParam("id")int idReport,@PathParam("doctor")String doctForRecomantion,@PathParam("date")String date,@PathParam("name")String nameTreatment){
+	
+			courseService.addTreatement(idReport,doctForRecomantion,date,nameTreatment);
 			return Response.status(Response.Status.OK).entity("createed").build();
-		}else
-			return Response.status(Response.Status.NOT_FOUND).entity("empty").build();	
+		
 	}
 	@POST
 	@Path("/{appId}/{type}")
@@ -75,7 +78,7 @@ public class CourseRessources {
 			if(!TreatmentsByReport.isEmpty())
 				return Response.status(Response.Status.OK).entity(TreatmentsByReport).build();
 			else
-				return Response.status(Response.Status.NOT_FOUND).entity("empty").build();
+				return Response.status(Response.Status.OK).entity(TreatmentsByReport).build();
 		}
 		return Response.status(Response.Status.NOT_FOUND).entity("empty").build();
 		
@@ -102,6 +105,56 @@ public class CourseRessources {
 		else
 			return Response.status(Response.Status.NOT_FOUND).entity("empty").build();
 	}
+	@GET
+	@Path("getReportById/{idr}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getReportById(@PathParam("idr")int reportId){
+		if(reportId>0) {
+			Report r=courseService.getReportById(reportId);
+			return Response.status(Response.Status.OK).entity(r).build();
+		}
+		else
+			return Response.status(Response.Status.NOT_FOUND).entity("empty").build();
+	}
+	@GET
+	@Path("getAppointmentByPatientId/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAppointmentByPatientId(@PathParam("id")int patientId){
+		if(patientId>0) {
+			List<Appointment>  r=courseService.getAppointmentsByIdPatient(patientId);
+			return Response.status(Response.Status.OK).entity(r).build();
+		}
+		else
+			return Response.status(Response.Status.NOT_FOUND).entity("empty").build();
+	}
+	@GET
+	@Path("getAppointmentById/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAppointmentById(@PathParam("id")int id){
+		if(id>0) {
+		Appointment r=courseService.getAppointmentsById(id);
+			return Response.status(Response.Status.OK).entity(r).build();
+		}
+		else
+			return Response.status(Response.Status.NOT_FOUND).entity("empty").build();
+	}
+	@GET
+	@Path("getPatients")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getPatient(){
+			List<Patient>  r=userService.ListPatient();
+			return Response.status(Response.Status.OK).entity(r).build();
+		
+	}
+	@GET
+	@Path("getCourse/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getPatient(@PathParam("id") int id){
+			Course c =courseService.getCourseByIdPatient(id);
+			return Response.status(Response.Status.OK).entity(c).build();
+		
+	}
+	
 	
 	/*@GET
 	@Path("/{idP}/{idD}")

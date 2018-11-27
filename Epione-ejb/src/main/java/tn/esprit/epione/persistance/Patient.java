@@ -108,7 +108,17 @@ public class Patient extends User implements Serializable{
 	public void setTreated(int treated) {
 		this.treated = treated;
 	}
+	public Patient(String patient) {
+		
+	}
 
+	@Override
+	public String toString() {
+		return super.toString()+
+		 "Patient [numberSocialSecurity=" + numberSocialSecurity + ", appointments=" + appointments
+				+ ", discussions=" + discussions + ", course=" + course + ", treated=" + treated + "]";
+	}
+	
 	
 	
 }
