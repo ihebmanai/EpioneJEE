@@ -31,7 +31,7 @@ public User getUserById(int idUser);
 	public boolean changeForgotPassword(int idUser, String token, String newPwd);
 
 	public User findUserById(int id);
-
+	public User findUserByEmail(String email);
 
 	public List<User> getAllUsers();
 

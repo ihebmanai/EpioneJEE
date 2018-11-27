@@ -253,7 +253,7 @@ public class ExtractionReso implements ExtractionInt {
 	}
 
 	@Override
-	public Doctor AddDoctor(String nom, String prenom, String specialie) throws IOException {
+	public Doctor AddDoctor(String nom, String prenom, String specialie,String password) throws IOException {
 		Extract e = new Extract();
 		e = searchexistingdoctor(nom, prenom, specialie);
 		if (e != null) {
@@ -278,6 +278,7 @@ public class ExtractionReso implements ExtractionInt {
 			user.setPhoto("www.doctolib.fr" + e.getPhoto());
 			user.setPhone(e.getTelephone());
 			user.setEmail("b.skander@yahoo.fr");
+			user.setPassword(password);
 			System.out.println(user);
 			em.persist(user);
 			return user;

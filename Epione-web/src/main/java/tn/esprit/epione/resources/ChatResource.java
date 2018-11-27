@@ -2,6 +2,7 @@ package tn.esprit.epione.resources;
 
 import java.util.List;
 
+
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Consumes;
@@ -25,11 +26,11 @@ public class ChatResource {
 
 	@EJB
 	DiscussionIServicesLocal cs;
-
 	@POST
 	@Path("{idDoctor}/{idPatient}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response sendMessage(@PathParam("idDoctor") int idDoctor, @PathParam("idPatient") int idPatient, Message msg) {
+	@Consumes("application/json; charset=utf8")
+	public Response sendMessage(@PathParam("idDoctor") int idDoctor, @PathParam("idPatient") int idPatient,
+			Message msg) {
 		int id = cs.sendMsg(idDoctor, idPatient, msg);
 		if (id > -1)
 			return Response.status(Response.Status.CREATED).entity(id).build();
@@ -58,7 +59,7 @@ public class ChatResource {
 
 	@GET
 	@Path("/messages/{idDiscussion}/{days}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON+"; charset=utf8")
 	public Response getMessageLastDays(@PathParam("idDiscussion") int idDiscussion, @PathParam("days") int days) {
 		List<Message> l = cs.getMessageLastDays(idDiscussion, days);
 		if (l != null)
@@ -68,7 +69,7 @@ public class ChatResource {
 
 	@GET
 	@Path("{idDoctor}/{idPatient}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON+"; charset=utf8")
 	public Response getDiscussion2Users(@PathParam("idDoctor") int idDoctor, @PathParam("idPatient") int idPatient) {
 
 		Discussion c = cs.getDiscussion2Users(idDoctor, idPatient);
@@ -79,7 +80,7 @@ public class ChatResource {
 
 	@GET
 	@Path("{idDoctor}/{idPatient}/{days}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON+"; charset=utf8")
 	public Response getDiscussion2UsersLastDays(@PathParam("idDoctor") int idDoctor,
 			@PathParam("idPatient") int idPatient, @PathParam("days") int days) {
 		Discussion c = cs.getDiscussion2UsersLastDays(idDoctor, idPatient, days);
@@ -90,7 +91,7 @@ public class ChatResource {
 
 	@GET
 	@Path("all/{idUser}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON+"; charset=utf8")
 	public Response getDiscussionsByUser(@PathParam("idUser") int idUser) {
 
 		List<Discussion> c = cs.getDiscussionsByUser(idUser);
@@ -101,7 +102,7 @@ public class ChatResource {
 
 	@GET
 	@Path("all/{idUser}/{days}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON+"; charset=utf8")
 	public Response getDiscussionsLastDays(@PathParam("idUser") int idUser, @PathParam("days") int days) {
 		List<Discussion> c = cs.getDiscussionsLastDays(idUser, days);
 		if (c != null)

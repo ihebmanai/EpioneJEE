@@ -64,13 +64,13 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	}
 	
 	@PostConstruct
-	@Schedule(hour = "*", minute = "*", second = "*/10", persistent = false)
+	@Schedule(hour = "*", minute = "*", second = "*/30", persistent = false)
 	public void doPeriodicCleanup() throws ParseException { 
 	
-	/*	List<Appointment> list_app = new ArrayList<Appointment>();
+		List<Appointment> list_app = new ArrayList<Appointment>();
 		rememberPatient();
 		System.out.println("cron 1 s'execute"+list_app);
-//		
+		/*		
 		System.out.println("**************************************");
 //		DeleteAutomatique();
 ////		System.out.println("cron 2 s'execute"+list_app);

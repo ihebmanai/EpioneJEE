@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Response.Status;
 import tn.esprit.epione.interfaces.ExtractionInt;
 import tn.esprit.epione.persistance.Doctor;
 import tn.esprit.epione.persistance.Extract;
+import tn.esprit.epione.util.Util;
 
 @Path("exe")
 @RequestScoped
@@ -71,14 +73,15 @@ ArrayList<Extract> test= extract.SearchBySpecialityandPlace(specialite, place, p
 	}
 	@POST
 	@Path("/AddFromDoctolib")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response AddDoctor(@QueryParam(value="nom")String nom,@QueryParam(value="prenom")String prenom,@QueryParam(value="specialite")String specialite) throws IOException
+	public Response AddDoctor(Extract e) throws IOException
 	{
-		//Extract ex=extract.searchexistingdoctor(nom, prenom, specialite);
-		Doctor u=extract.AddDoctor(nom, prenom, specialite);
+		Doctor u=extract.AddDoctor(e.getNom(), e.getPrenom(), e.getSpecialite(),Util.hashPassword(e.getPassword()));
+
 		if(u==null)
 		{
-			return Response.status(Status.OK).entity("doctor not found in doctlib, please make sure of your name and city").build();
+			return Response.status(Status.NOT_FOUND).entity("doctor not found in doctlib, please make sure of your name and speciality").build();
 		}
 		return Response.status(Status.ACCEPTED).entity(u).build();
 		

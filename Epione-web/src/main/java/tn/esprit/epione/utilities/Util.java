@@ -11,17 +11,8 @@ public class Util {
 	// save to ...\Epione\Files\
 	public static void writeFile(byte[] content, String filename) throws IOException {
 
-		String uploadedFilePath = System.getProperty("user.dir");// ...\Epione\JEE\epione-ejb
-		for (int i = 0; i < 2; i++)
-			uploadedFilePath = uploadedFilePath.substring(0, uploadedFilePath.lastIndexOf("\\"));
-
-		uploadedFilePath += "\\Files\\";// ...\Epione\Files\
-
-		if (uploadedFilePath.contains("Hamdi"))
-			uploadedFilePath = "D:\\9raya\\ESPRIT\\2 ING\\PiDev\\Epione\\Files\\";
-		else
-			uploadedFilePath = "C:\\Epione\\Files\\";
-
+		String uploadedFilePath = System.getProperty("user.dir");
+		uploadedFilePath = "C:\\epione\\Files\\";
 		File file = new File(uploadedFilePath + filename);
 
 		if (!file.exists()) {
