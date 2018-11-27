@@ -9,6 +9,7 @@ import javax.mail.internet.AddressException;
 
 import tn.esprit.epione.persistance.Appointment;
 import tn.esprit.epione.persistance.Doctor;
+import tn.esprit.epione.persistance.User;
 
 @Local
 public interface AppointmentIServices {
@@ -22,6 +23,7 @@ public interface AppointmentIServices {
 		public List<Appointment> MyAppointments(int idPatient);
 		public List<Appointment> MyRequests(int idPatient);
 		public boolean cancelRequest(int idAppointment);
+		public List<Appointment> MyRefusedAppointments(int idPatient);
 		// doctor Services
 		public List<Appointment> acceptedRequests(int idPatient);
 		//
@@ -35,5 +37,8 @@ public interface AppointmentIServices {
 		public void mailingId (int idRdv) throws AddressException, MessagingException ;
 		public List<Appointment> findAppByTitle(String title);
 		public void DeleteAutomatique() throws ParseException;
+		public List<User> getAllDocotor();
+		public List<User> findAppByVille(String ville);
+		public User findDocById(int id);
 	
 }

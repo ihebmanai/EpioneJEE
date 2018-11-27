@@ -22,6 +22,7 @@ import javax.ejb.Schedule;
 import javax.ejb.Schedules;
 import javax.ejb.Startup;
 import javax.ejb.Stateless;
+import javax.jws.soap.SOAPBinding.Use;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -42,6 +43,7 @@ import tn.esprit.epione.interfaces.AppointmentIServices;
 import tn.esprit.epione.persistance.Appointment;
 import tn.esprit.epione.persistance.Doctor;
 import tn.esprit.epione.persistance.Patient;
+import tn.esprit.epione.persistance.Role;
 import tn.esprit.epione.persistance.State;
 import tn.esprit.epione.persistance.User;
 
@@ -63,24 +65,20 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 		System.out.println("email Thread");
 	}
 	
-	@PostConstruct
-	@Schedule(hour = "*", minute = "*", second = "*/30", persistent = false)
-	public void doPeriodicCleanup() throws ParseException { 
+//	@PostConstruct
+	//@Schedule(hour = "*", minute = "*", second = "*/30", persistent = false)
+/*	public void doPeriodicCleanup() throws ParseException { 
 	
 		List<Appointment> list_app = new ArrayList<Appointment>();
 		rememberPatient();
 		System.out.println("cron 1 s'execute"+list_app);
-		/*		
-		System.out.println("**************************************");
-//		DeleteAutomatique();
-////		System.out.println("cron 2 s'execute"+list_app);
-//		System.out.println("**************************************");
-	*/
+	
+	
 	
 		
 	}
 
-	
+	*/
 
 	@Override
 	public List<Appointment> getAll() {
@@ -120,8 +118,20 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 		return false;
 	}
 
+	//my appointments ==> accepted appointments !! 
 	@Override
 	public List<Appointment> MyAppointments(int idPatient) {
+		Patient pat=em.find(Patient.class, idPatient);
+    	TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
+    			" where m.patient=:sender "+" and m.state = 0 ",Appointment.class);	
+		 List<Appointment> appointments = query.setParameter("sender", pat).getResultList();
+		 System.out.println("size of list my appointmtnets"+appointments.size());
+		 return appointments;
+	}
+
+	// my requests ===> ruunning 
+	@Override
+	public List<Appointment> MyRequests(int idPatient) {
 		Patient pat=em.find(Patient.class, idPatient);
     	TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
     			" where m.patient=:sender "+" and m.state = 1 ",Appointment.class);	
@@ -130,22 +140,14 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 		 return appointments;
 	}
 
-	@Override
-	public List<Appointment> MyRequests(int idPatient) {
-		Patient pat=em.find(Patient.class, idPatient);
-    	TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
-    			" where m.patient=:sender "+" and m.state = 2 ",Appointment.class);	
-		 List<Appointment> appointments = query.setParameter("sender", pat).getResultList();
-		 System.out.println("size of list my appointmtnets"+appointments.size());
-		 return appointments;
-	}
-
+	//cancel Request ===>
 	@Override
 	public boolean cancelRequest(int idAppointment) {
 		
 		Appointment ap = em.find(Appointment.class, idAppointment);
 		 if(ap!=null){
-		em.remove(ap);
+		ap.setState(State.refused);
+		em.merge(ap);
 		return true;
 		}
 		 return false;
@@ -156,7 +158,7 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	public List<Appointment>  acceptedRequests(int idPatient) {
 		Patient pat=em.find(Patient.class, idPatient);
     	TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
-    			" where m.patient=:sender "+" and m.state = 1 ",Appointment.class);	
+    			" where m.patient=:sender "+" and m.state = 2 ",Appointment.class);	
 		 List<Appointment> appointments = query.setParameter("sender", pat).getResultList();
 		 System.out.println("size of list my appointmtnetssssss"+appointments.size());
 		 return appointments;
@@ -198,7 +200,7 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 //		Appointment a = query.getSingleResult();
 //		
 		Appointment a = em.find(Appointment.class, id);
-		System.out.println(a.getMessage());
+		//System.out.println(a.getMessage());
 		
 		return a;
 	}
@@ -320,7 +322,7 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 	public void mailingId(int idRdv) throws AddressException, MessagingException {
 		Appointment ap = em.find(Appointment.class, idRdv);
 		System.out.println("ap");
-		Patient patient = em.find(Patient.class, ap.getPatient().getId()); 
+		User patient = em.find(User.class, ap.getDoctor().getId()); 
 		System.out.println("patient"+patient);
 		
 		
@@ -391,4 +393,43 @@ public class AppointmentServicesImpl implements AppointmentIServices {
 		}
 
 }
+
+	@Override
+	public List<Appointment> MyRefusedAppointments(int idPatient) {
+		Patient pat=em.find(Patient.class, idPatient);
+    	TypedQuery<Appointment> query = em.createQuery(" select m from Appointment m "+
+    			" where m.patient=:sender "+" and m.state = 2 ",Appointment.class);	
+		 List<Appointment> appointments = query.setParameter("sender", pat).getResultList();
+		 System.out.println("size of list my appointmtnets"+appointments.size());
+		 return appointments;
+	}
+
+	@Override
+	public List<User> getAllDocotor() {
+		List<User> appointments = new ArrayList<>();
+		List<User> doctors = new ArrayList<>();
+		TypedQuery<User> query= em.createQuery("select e from User e ORDER BY e.creationDate DESC",User.class);
+		appointments = query.getResultList();
+		for (User user : appointments) {
+			if (user.getRole().equals(Role.doctor))  {
+				doctors.add(user);
+			}
+		}
+		System.out.println("rendez vous:"+appointments.size());
+		return doctors ;
+	}
+
+	@Override
+	public List<User> findAppByVille(String ville) {
+		
+		return em.createQuery("SELECT e from User e  WHERE e.adresse.ville like :param", User.class)
+				.setParameter("param","%"+ville+"%").getResultList();
+	}
+
+	@Override
+	public User findDocById(int id) {
+		User doc = em.find(User.class, id);
+		
+		return doc;
+	}
 }

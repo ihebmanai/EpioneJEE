@@ -32,6 +32,7 @@ public class Appointment implements Serializable {
 	private String object ;
 	private String message ;
 	// type : urgence
+   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd",timezone="GMT+01")
 	@Temporal(TemporalType.DATE)
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
 

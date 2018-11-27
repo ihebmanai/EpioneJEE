@@ -31,7 +31,9 @@ public class User implements Serializable {
 	private String firstName ; 
 	private String lastName ;
 	@Temporal(TemporalType.DATE)
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
 	private Date birthDate ; 
+	
 	@Embedded
 	private Adresse adresse ; 
 	private String phone ; 
