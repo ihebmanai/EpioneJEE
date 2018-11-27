@@ -22,16 +22,21 @@ public interface ICourseServices {
 	public void setNotificationSeen(int id);
 	public ArrayList<Notification> getNotification();
 	//get rapport 
-	public void addReport(Report r);
+	public Report getReportById(int reportId);
+	public void addReport(int appId,String description,String desease,String object);
 	public List<Report> getAllReportByPatient(int patientId);
 	public List<Report> getAllReportByDoctor(int patientId,int doctorId);
 	public List<Report> getAllReportByDesease(int patientId,String desease);
 	public List<Report> getAllReportByDeseaseAndDoctor(int patientId,String desease,int doctorId);
 	//treatments
-	public void addTreatement(Treatments t);
+	public void addTreatement(int idReport,String doctForRecomantion,String date,String nameTreatment);
 	public void validateTreatement(int treatmentId);
 	public List<Treatments> getAllTreatmentsByReport(int idReport);
 	public void updateTreatment(Treatments t);
+	public Course getCourseByIdPatient(int idPatinet);
+	public List<Appointment> getAppointmentsByIdPatient(int idPatient);
+	public Appointment getAppointmentsById(int id);
+
 
 }
 

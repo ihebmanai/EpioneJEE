@@ -75,6 +75,31 @@ public class Treatments implements Serializable {
 	public void setJustification(String justification) {
 		this.justification = justification;
 	}
-		
+	public Treatments(int id, String nameTreatment, String dateTreatments, int valider, String doctorForRecommandation,
+			String justification, Report report) {
+		super();
+		this.id = id;
+		this.nameTreatment = nameTreatment;
+		this.dateTreatments = dateTreatments;
+		this.valider = valider;
+		this.doctorForRecommandation = doctorForRecommandation;
+		this.justification = justification;
+		this.report = report;
+	}
+	public Treatments() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Treatments(String treatment) {
+        // TODO Auto-generated constructor stub
+    }
+	@Override
+	public String toString() {
+		return "Treatments [id=" + id + ", nameTreatment=" + nameTreatment + ", dateTreatments=" + dateTreatments
+				+ ", valider=" + valider + ", doctorForRecommandation=" + doctorForRecommandation + ", justification="
+				+ justification + ", report=" + report + "]";
+	}
+	
+	
 	
 }
