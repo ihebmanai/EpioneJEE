@@ -83,5 +83,24 @@ public Response Dailyprogram(@QueryParam( "idDocd") int idDoc) {
 	else
 		return Response.status(Status.NOT_FOUND).build();
 }
-
+@GET
+@Produces("application/json")
+public Response GetAppointmentById(@QueryParam( "id")int id) {
+	Appointment appointment = appointmentInterface.GetAppointmentyId(id);
+	if (appointment != null)
+		return Response.status(Status.CREATED).entity(appointment).build();
+	else
+		return Response.status(Status.NOT_FOUND).build();
+}
+@GET
+@Path("all")
+@Produces("application/json")
+public Response GetAllApp(@QueryParam( "idall")int id)
+{
+	List<Appointment> appointment = appointmentInterface.GetAllAppointment(id);
+	if (appointment != null)
+		return Response.status(Status.CREATED).entity(appointment).build();
+	else
+		return Response.status(Status.NOT_FOUND).build();
+}
 }

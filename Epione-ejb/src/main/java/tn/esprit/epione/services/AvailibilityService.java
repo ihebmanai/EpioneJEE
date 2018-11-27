@@ -1,5 +1,6 @@
 package tn.esprit.epione.services;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,15 +31,16 @@ public class AvailibilityService implements AvailibilityInterface {
 		em.flush();
 		
 		do {
-//			startDate.setMinutes(startDate.getMinutes() + 15);
+			//startDate.setMinutes(startDate.getMinutes() + 15);
 			Availibility avi = new Availibility(Util.NbrMinutes(startDate, 15), idDoc);
 			System.out.println(Util.NbrMinutes(startDate, 15));
-			avi.setStartDate(Util.NbrMinutes(startDate, 15));
+			//avi.setStartDate(Util.NbrMinutes(startDate, 15));
 			startDate = Util.NbrMinutes(startDate, 15);
 			em.persist(avi);
 			em.flush();
 
-		} while (startDate.before(endDate));
+		} 
+		while (startDate.before(endDate));
 	}
 
 	@Override
@@ -59,9 +61,34 @@ public class AvailibilityService implements AvailibilityInterface {
 	}
 
 	@Override
-	public void DeleteAvaDoc(int idDoc, String  date) {
-em.createQuery("Delete  from Availibility e  where e.date BETWEEN '"+date+"' AND '"+date+" 23:59:59'AND e.idDoc="+idDoc  
+	public void DeleteAvaDoc(int idDoc, String  startDate,String EndDate) {
+em.createQuery("Delete  from Availibility   where date BETWEEN '"+startDate+"' AND '"+EndDate+"' and idDoc="+idDoc  
 		).executeUpdate();
 	}
-	
+	@Override
+	public List<Availibility> GetAllAvabyByDay(int idDoc ,String  date) {
+		List<Availibility> appointments = new ArrayList<>();
+		TypedQuery<Availibility> query = em.createQuery(
+
+				"select e from Availibility e where e.idDoc=" + idDoc + " and e.date BETWEEN '" + date
+						+ "' AND '" + date + " 23:59:59'ORDER BY e.date",
+				Availibility.class);
+		appointments = query.getResultList();
+		System.out.println("rendez vous:" + appointments.size());
+		return appointments;
+
+	}
+
+	@Override
+	public List<Availibility> GetAllAvaby(int idDoc) {
+		List<Availibility> appointments = new ArrayList<>();
+		TypedQuery<Availibility> query = em.createQuery(
+
+				"select e from Availibility e where e.idDoc=" + idDoc,
+				Availibility.class);
+		appointments = query.getResultList();
+		System.out.println("rendez vous:" + appointments.size());
+		return appointments;	}
+
+
 }
