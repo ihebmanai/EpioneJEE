@@ -30,7 +30,6 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	
 	@PersistenceContext(name="Epione-ejb")
 	EntityManager em ;
-
 	@Override
 	public int addDiscussion(Discussion c) {
 		em.persist(c);
@@ -44,6 +43,7 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 		TypedQuery<Discussion> q;
 		Discussion c;
 		try {
+			msg.setSentTime(Util.getDateNowUTC());
 			q = em.createQuery(
 					"select c from Discussion c where (c.doctor.id = :idDoctor and c.patient.id = :idPatient)",
 					Discussion.class);
@@ -60,7 +60,7 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 				c = em.find(Discussion.class, idDiscussion);
 
 				msg.setDiscussion(c);
-				msg.setSentTime(Util.getDateNowUTC());
+				
 				em.persist(msg);
 				em.flush();
 				return msg.getId();
@@ -70,7 +70,6 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 
 			c.setLastUpdated(Util.getDateNowUTC());
 			c.getMessages().add(msg);
-			msg.setSentTime(Util.getDateNowUTC());
 			msg.setDiscussion(c);
 			em.persist(msg);
 			em.merge(c);
@@ -148,6 +147,17 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 			q.setParameter("idUser", idUser);
 			List<Discussion> discussions = q.getResultList();
 
+//			if (!discussions.isEmpty()) {
+//				discussions.stream().forEach(c -> c.getMessages().sort(Comparator.comparing(Message::getSentTime).reversed()));//desc
+				
+//				Collections.sort(discussions, new Comparator<Discussion>() {
+//					@Override
+//					public int compare(Discussion c1, Discussion c2) {
+//						return c1.getMessages().get(0).getSentTime().compareTo(c2.getMessages().get(0).getSeenTime());// ASC
+//					}
+//				});
+//			}
+
 			return discussions;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -179,10 +189,10 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 	}
 
 	@Override
-	public boolean seenDiscussion(int discussionId) {
+	public boolean seenDiscussion(int discussionId,int id) {
 		try {
 			Discussion c = em.find(Discussion.class, discussionId);
-			c.getMessages().stream().filter(m -> m.getSeenTime() == null)
+			c.getMessages().stream().filter(m -> m.getSeenTime() == null && m.getSenderId() == id)
 					.forEach(m -> m.setSeenTime(Util.getDateNowUTC()));
 
 			em.merge(c);
@@ -207,7 +217,6 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 				}
 				c.setDoctorDeleted(true);
 				em.merge(c);
-				sendMsg(c.getDoctor().getId(), c.getPatient().getId(), new Message("The doctor have deleted the discussion",c.getDoctor().getId()));
 				return true;
 			}
 
@@ -219,7 +228,6 @@ public class DiscussionServicesImpl implements DiscussionIServicesLocal {
 				}
 				c.setPatientDeleted(true);
 				em.merge(c);
-				sendMsg(c.getDoctor().getId(), c.getPatient().getId(), new Message("The patient have deleted the discussion", c.getPatient().getId()));
 				return true;
 			}
 		} catch (Exception e) {
