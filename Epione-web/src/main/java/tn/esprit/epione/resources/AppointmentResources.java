@@ -69,6 +69,7 @@ public class AppointmentResources  {
 	}
 	
 	@PUT
+	@Path("update")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateApp(Appointment ap ) {
 	/*	Artsuki a=artsukiManager.findArtsukiById(authenticatedUser.getId());
@@ -87,7 +88,7 @@ public class AppointmentResources  {
 	}
 	
 	@DELETE
-	//@Secured
+	
 	@Path("{appointments}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -181,12 +182,28 @@ public class AppointmentResources  {
 			 return Response.status(Status.NOT_MODIFIED).entity("no Request to cancel").build();
 	}
 	
+	
+	
 	@GET
 	@Path("mail/{id}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response mailPatient(@PathParam(value="id") int id) throws AddressException, MessagingException {
 		 appointmentIServices.mailingId(id);
 		return Response.status(Status.GONE).entity("mail Sent").build();
+	}
+	
+	@GET
+	@Path("myApp/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response myAppointments(@PathParam(value="id")int id) {
+	 	return Response.status(Status.FOUND).entity(appointmentIServices.MyAppointments(id)).build() ; 
+	}
+	
+	@GET
+	@Path("refusedApp/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response myRefusedAppointments(@PathParam(value="id")int id) {
+		return Response.status(Status.FOUND).entity(appointmentIServices.MyRefusedAppointments(id)).build() ; 
 	}
 	
 	
@@ -223,6 +240,33 @@ public class AppointmentResources  {
 		return Response.status(Status.OK).entity(appointmentIServices.findAppByTitle(title)).build();
 		
 	}
+	
+	@GET
+	@Path("doctors")
+	@Produces("application/json")
+	public Response getAllDoctors () {
+		 
+		 return Response.status(Status.CREATED).entity(appointmentIServices.getAllDocotor()).build();
+	}
+	
+	@GET
+	@Path("searshVille")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response searshVille(@QueryParam(value="ville")String ville) {
+		
+		return Response.status(Status.OK).entity(appointmentIServices.findAppByVille(ville)).build();
+		
+	}
+	
+	@GET
+	@Path("doc/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findDocById(@PathParam(value="id") int id) {
+		
+		return Response.status(Status.GONE).entity(appointmentIServices.findDocById(id)).build();
+	}
+	
+	
 }
 	
 	

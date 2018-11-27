@@ -20,6 +20,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name="Appointment")
 public class Appointment implements Serializable {
@@ -30,6 +32,7 @@ public class Appointment implements Serializable {
 	private String object ;
 	private String message ;
 	// type : urgence
+   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd",timezone="GMT+01")
 	@Temporal(TemporalType.DATE)
 	private Date date_appointment ;
 	private String start_hour ; 
