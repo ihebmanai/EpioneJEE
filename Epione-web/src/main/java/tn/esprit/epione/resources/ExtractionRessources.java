@@ -16,10 +16,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import tn.esprit.epione.interfaces.ExtractionInt;
-import tn.esprit.epione.persistance.Adresse;
 import tn.esprit.epione.persistance.Doctor;
 import tn.esprit.epione.persistance.Extract;
-import tn.esprit.epione.persistance.User;
 import tn.esprit.epione.util.Util;
 
 @Path("exe")
@@ -54,7 +52,6 @@ ArrayList<Extract> test= extract.SearchByPlace(place, pagenumber);
 	public Response SearchByspecialtyandplace(@QueryParam(value="specialite")String specialite,@QueryParam(value="place")String place,@QueryParam(value="pagenumber")int pagenumber) throws IOException 
 	{
 ArrayList<Extract> test= extract.SearchBySpecialityandPlace(specialite, place, pagenumber);
-
 	//	extract.test(specialite, pagenumber);
 		return Response.status(Status.OK).entity(test).build();
 }
@@ -67,25 +64,6 @@ ArrayList<Extract> test= extract.SearchBySpecialityandPlace(specialite, place, p
 	{
 		//Extract ex=extract.searchexistingdoctor(nom, prenom, specialite);
 		Extract u=extract.searchexistingdoctor(nom, prenom, specialite);
-		/*
-		 * User user  = new User();
-		String fulladdres = u.getAdresse();
-		String villeetcode = "";
-		String ville = "";
-		String rue = "";
-		String[] naming = fulladdres.split(",", 2);
-		villeetcode = naming[1];
-		String[] villes = villeetcode.split(" ", 3);
-		ville = villes[2];
-		rue = naming[0];
-		Adresse adresse = new Adresse(rue, ville);
-		user.setAdress(adresse);
-		//user.setAdress(u.getAdresse());
-		user.setLastName(u.getNom());
-		user.setFirstName(u.getPrenom());
-		user.setPhone(u.getTelephone());
-		user.setPhoto(u.getPhoto());
-		System.out.println(adresse.getVille()+"--- "+adresse.getRue());*/
 		if(u==null)
 		{
 			return Response.status(Status.OK).entity("not found").build();
@@ -99,7 +77,7 @@ ArrayList<Extract> test= extract.SearchBySpecialityandPlace(specialite, place, p
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response AddDoctor(Extract e) throws IOException
 	{
-		Doctor u=extract.AddDoctor(e.getLastname(), e.getFirstname(), e.getSpeciality_s(),Util.hashPassword(e.getPassword()));
+		Doctor u=extract.AddDoctor(e.getNom(), e.getPrenom(), e.getSpecialite(),Util.hashPassword(e.getPassword()));
 
 		if(u==null)
 		{
@@ -108,17 +86,6 @@ ArrayList<Extract> test= extract.SearchBySpecialityandPlace(specialite, place, p
 		return Response.status(Status.ACCEPTED).entity(u).build();
 		
 	}
-	
-	@GET
-	@Path("/profile")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getprofile(@QueryParam(value="profile")String profile) throws IOException 
-	{
-Extract test= extract.profile(profile);
-	//	extract.test(specialite, pagenumber);
-		return Response.status(Status.OK).entity(test).build();
-}
-	
 	
 }
 
