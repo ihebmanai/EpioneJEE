@@ -10,17 +10,94 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class Extract implements Serializable{
 
-private String nom;
-private String prenom;
+private String lastname;
+private String firstname;
 
-private String adresse;
-private String specialite;
+private Adresse adresse;
+private String speciality_s;
 private String profile ;
 private String photo;
 private String telephone;
 private String password;
+private String lat ; 
+private String lng;
+
+
+
+
+
+
+
+
+
+
+
+public String getLastname() {
+	return lastname;
+}
+
+
+
+
+
+public void setLastname(String lastname) {
+	this.lastname = lastname;
+}
+
+
+
+
+
+public String getFirstname() {
+	return firstname;
+}
+
+
+
+
+
+public void setFirstname(String firstname) {
+	this.firstname = firstname;
+}
+
+
+
+
+
 public String getTelephone() {
 	return telephone;
+}
+
+
+
+
+
+public String getLat() {
+	return lat;
+}
+
+
+
+
+
+public void setLat(String lat) {
+	this.lat = lat;
+}
+
+
+
+
+
+public String getLng() {
+	return lng;
+}
+
+
+
+
+
+public void setLng(String lng) {
+	this.lng = lng;
 }
 
 
@@ -51,27 +128,8 @@ public void setPassword(String password) {
 
 
 
-public Extract(String nom, String adresse, String specialite,String password) {
-	super();
-	this.nom = nom;
-	this.adresse = adresse;
-	this.specialite = specialite;
-	this.password = password;
-}
 
 
-
-
-
-public Extract(String nom, String prenom, String adresse, String specialite, String profile, String photo) {
-	super();
-	this.nom = nom;
-	this.prenom = prenom;
-	this.adresse = adresse;
-	this.specialite = specialite;
-	this.profile = profile;
-	this.photo = photo;
-}
 
 
 
@@ -82,36 +140,36 @@ public Extract() {
 }
 
 
-public String getNom() {
-	return nom;
+
+
+
+public String getSpeciality_s() {
+	return speciality_s;
 }
-public void setNom(String nom) {
-	this.nom = nom;
+
+
+
+
+
+public void setSpeciality_s(String speciality_s) {
+	this.speciality_s = speciality_s;
 }
+
+
+
+
+
 @XmlAttribute
-public String getAdresse() {
+public Adresse getAdresse() {
 	return adresse;
 }
-public void setAdresse(String adresse) {
+	
+public void setAdresse(Adresse adresse) {
 	this.adresse = adresse;
 }
-public String getSpecialite() {
-	return specialite;
-}
-public void setSpecialite(String specialite) {
-	this.specialite = specialite;
-}
-public String getPrenom() {
-	return prenom;
-}
 
 
 
-
-
-public void setPrenom(String prenom) {
-	this.prenom = prenom;
-}
 
 
 
@@ -120,10 +178,6 @@ public void setPrenom(String prenom) {
 public String getProfile() {
 	return profile;
 }
-
-
-
-
 
 public void setProfile(String profile) {
 	this.profile = profile;
@@ -151,7 +205,7 @@ public void setPhoto(String photo) {
 
 @Override
 public String toString() {
-	return "nom=" + nom + ", prenom=" + prenom + ", adresse=" + adresse + ", specialite=" + specialite
+	return "lastname=" + lastname + ", firstname=" + firstname + ", adresse=" + adresse + ", specialite=" + speciality_s
 			+ ", profile=" + profile + ", photo=" + photo +", telephone="+telephone;
 }
 
